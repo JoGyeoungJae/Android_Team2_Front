@@ -6,11 +6,17 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <!--    <EditText-->
+    <!--        android:id="@+id/signupId"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:hint="Id"/>-->
+
     <EditText
-        android:id="@+id/signupId"
+        android:id="@+id/signupEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Id"/>
+        android:hint="Email"/>
 
     <EditText
         android:id="@+id/signupPassword"
@@ -18,16 +24,24 @@
         android:layout_height="wrap_content"
         android:hint="Password"
         android:inputType="textPassword"/>
+
     <EditText
-        android:id="@+id/signupEmail"
+        android:id="@+id/signupName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Email"/>
+        android:hint="Name"/>
+
     <EditText
-        android:id="@+id/signupPhone"
+        android:id="@+id/signupNickname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Phone"/>
+        android:hint="Nickname"/>
+
+    <!--    <EditText-->
+    <!--        android:id="@+id/signupPhone"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:hint="Phone"/>-->
 
 
 

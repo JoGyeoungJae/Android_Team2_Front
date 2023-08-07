@@ -27,20 +27,20 @@ class SignupActivity : AppCompatActivity() {
     }
 
     private fun signUp() {
-        val id = binding.signupId.text.toString()
-        val password = binding.signupPassword.text.toString()
-        val email = binding.signupEmail.text.toString()
-        val phone = binding.signupPhone.text.toString()
+        val uemail = binding.signupEmail.text.toString()
+        val upassword = binding.signupPassword.text.toString()
+        val uname = binding.signupName.text.toString()
+        val unickname = binding.signupNickname.text.toString()
 
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://10.100.103.71:8080/") // Spring Boot 서버의 URL로 변경
+            .baseUrl("http://10.100.103.14:8080/") // Spring Boot 서버의 URL로 변경
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
         val apiService = retrofit.create(ApiService::class.java)
 
-        val user = User(id,password,email,phone)
-//        val call = apiService.signup(id, password, email, phone)
+        val user = User(uemail,upassword,uname,unickname)
+//       val call = apiService.signup(id, password, email, phone)
         val call = apiService.signup(user)
         call.enqueue(object : Callback<User> {
             override fun onResponse(call: Call<User>, response: Response<User>) {

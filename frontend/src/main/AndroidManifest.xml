@@ -11,9 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Frontend"
         android:usesCleartextTraffic="true">
-        <activity
-            android:name=".TestActivity"
-            android:exported="false" />
+
         <!-- <activity -->
         <!-- android:name=".PostActivity" -->
         <!-- android:exported="false" /> -->
