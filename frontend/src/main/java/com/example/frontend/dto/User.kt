@@ -1,4 +1,4 @@
-package com.example.frontend
+package com.example.frontend.dto
 
 import com.google.gson.annotations.SerializedName
 

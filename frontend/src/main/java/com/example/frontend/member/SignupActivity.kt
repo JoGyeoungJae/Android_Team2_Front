@@ -3,8 +3,8 @@ package com.example.frontend.member
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import com.example.frontend.ApiService
-import com.example.frontend.User
+import com.example.frontend.service.ApiService
+import com.example.frontend.dto.User
 import com.example.frontend.databinding.ActivitySignupBinding
 import retrofit2.Call
 import retrofit2.Callback
