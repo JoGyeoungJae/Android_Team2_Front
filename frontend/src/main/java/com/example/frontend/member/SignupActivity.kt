@@ -143,7 +143,7 @@ class SignupActivity : AppCompatActivity() {
         val unickname = binding.signupNickname.text.toString()
 
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://10.100.103.14:8080/") // Spring Boot 서버의 URL로 변경
+            .baseUrl("http://59.21.17.162:8080/") // Spring Boot 서버의 URL로 변경
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
