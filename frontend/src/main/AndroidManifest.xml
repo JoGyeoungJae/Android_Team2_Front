@@ -12,6 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Frontend"
         android:usesCleartextTraffic="true">
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCWwonIHNWkOKA1HeBlUKkgL1kBIk0_iWg" />
@@ -30,7 +31,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity
             android:name=".member.SignupActivity"
@@ -40,21 +40,17 @@
             android:exported="true" />
         <activity
             android:name=".main.MainActivity"
-            android:exported="true"/>
-
+            android:exported="true" />
 
         <provider
-            android:authorities="com.example.frontend.fileprovider"
             android:name="androidx.core.content.FileProvider"
+            android:authorities="com.example.frontend.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
-
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"></meta-data>
-
+                android:resource="@xml/file_paths" />
         </provider>
-
     </application>
 
 </manifest>
