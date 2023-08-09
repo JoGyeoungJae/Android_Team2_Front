@@ -1,4 +1,4 @@
-package com.example.frontend.main
+package com.example.frontend.restaurant
 
 import android.content.Intent
 import android.graphics.Bitmap
@@ -115,4 +115,5 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
             Log.d("joj", "LAT or LNG is null.")
         }
     }
+
 }

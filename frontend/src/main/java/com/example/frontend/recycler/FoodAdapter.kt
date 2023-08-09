@@ -12,7 +12,7 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.example.frontend.databinding.ItemMainBinding
 import com.example.frontend.dto.FoodInfo
-import com.example.frontend.main.ItemActivity
+import com.example.frontend.restaurant.ItemActivity
 
 
 //부산맛집

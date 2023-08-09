@@ -11,11 +11,20 @@ import androidx.activity.result.contract.ActivityResultContracts
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.frontend.databinding.ActivityAddRestaurantBinding
+import com.example.frontend.dto.FoodInfo
+import com.example.frontend.service.FoodInfoService
 import com.example.frontend.util.StorageApplication
 import com.example.frontend.util.StorageApplication.Companion.storage
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
+import java.io.FileInputStream
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -26,6 +35,7 @@ class AddRestaurantActivity : AppCompatActivity() {
     //파일 경로를 전역으로 설정해서 갤러리에서 사진을 선택후 해당 파일의 절대 경로를 저장하는 파일
     lateinit var filePath: String
     private val storage = Firebase.storage
+    lateinit var foodinfoService : FoodInfoService
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddRestaurantBinding.inflate(layoutInflater)
@@ -45,14 +55,46 @@ class AddRestaurantActivity : AppCompatActivity() {
             requestLauncher.launch(intent)
         }
         binding.addSave.setOnClickListener {
-            if(binding.addImageView.drawable !== null){
-                //store 에 먼저 데이터를 저장후 document id 값으로 업로드 파일 이름 지정
-                Log.d("joj","@@@@@@@@@@@@@")
-                uploadImage("testjojojo")
-//                saveStore()
-            }else {
-                Toast.makeText(this, "데이터가 모두 입력되지 않았습니다.", Toast.LENGTH_SHORT).show()
-            }
+            val retrofit = Retrofit.Builder()
+                .baseUrl("http://10.100.103.71:8080/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+
+            val rtitle = binding.rtitle.text
+            val rcity = binding.rcity.text
+            val rlat = binding.rlat.text
+            val rlng = binding.rlng.text
+            val rtel = binding.rtel.text
+            val rinfo = binding.rinfo.text
+
+            foodinfoService = retrofit.create(FoodInfoService::class.java)
+            val foodInfo = FoodInfo(null,rtitle.toString(), rcity.toString(), rlat.toString(), rlng.toString(),  rtel.toString(),null, rinfo.toString(),null,null ,null)
+            val call = foodinfoService.postFoodInfo(foodInfo)
+            call.enqueue(object : Callback<FoodInfo> {
+                override fun onResponse(call: Call<FoodInfo>, response: Response<FoodInfo>) {
+                    if (response.isSuccessful) {
+                        // 서버로부터 응답이 성공적으로 돌아온 경우 처리할 내용
+                        // 예: Toast 메시지 표시 등
+                    } else {
+                        // 서버로부터 응답이 실패한 경우 처리할 내용
+                        // 예: 에러 메시지 표시 등
+                    }
+                }
+
+                override fun onFailure(call: Call<FoodInfo>, t: Throwable) {
+                    // 통신에 실패한 경우 처리할 내용
+                    // 예: 에러 메시지 표시 등
+                }
+            })
+
+//            if(binding.addImageView.drawable !== null){
+//                //store 에 먼저 데이터를 저장후 document id 값으로 업로드 파일 이름 지정
+//                Log.d("joj","@@@@@@@@@@@@@")
+//                uploadImage("testjojojo")
+////                saveStore()
+//            }else {
+//                Toast.makeText(this, "데이터가 모두 입력되지 않았습니다.", Toast.LENGTH_SHORT).show()
+//            }
 
         }
 
@@ -93,16 +135,13 @@ class AddRestaurantActivity : AppCompatActivity() {
     private fun uploadImage(docId: String){
         //add............................
 
-        val storageRef = storage.reference
-        /*imgRef라는 개체로 업로드 및 다운로드 실행
-        * child 상위 폴더 images 하위에 이미지 파일이 저장되는 구조*/
-        val imgRef = storageRef.child("profile_images/${docId}.jpg")
+        val storageRef: StorageReference = storage.reference
+        val imgRef: StorageReference = storageRef.child("profile_images/$docId.jpg")
 
-        //후처리 코드에서 선택된 사진의 절대 경로  file 라고 하는 참조형 변수에 할당
-        //val file = Uri.fromFile(File(filePath))
-        val inputStream = contentResolver.openInputStream(Uri.parse(filePath))
+
+        val stream = FileInputStream(File(filePath))
         //imgRefㄹ의 기능중 putFile 경로의 파일을 업로드 하는 기능
-        imgRef.putStream(inputStream!!)
+        imgRef.putStream(stream)
             //이미지 업로드가 성공 하면 수행
             .addOnSuccessListener {
                 Toast.makeText(this, "save ok..", Toast.LENGTH_SHORT).show()

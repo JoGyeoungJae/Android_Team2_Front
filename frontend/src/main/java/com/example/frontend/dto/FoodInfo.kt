@@ -3,25 +3,25 @@ package com.example.frontend.dto
 import com.google.gson.annotations.SerializedName
 data class FoodInfo(
     @SerializedName("rid")
-    val rid:Long,
+    val rid:String?,
     @SerializedName("rtitle")
     val rtitle:String,
     @SerializedName("rcity")
     val rcity:String,
     @SerializedName("rlat")
-    val rlat: Double,
+    val rlat: String,
     @SerializedName("rlng")
-    val rlng: Double,
+    val rlng: String,
     @SerializedName("rtel")
     val rtel: String,
     @SerializedName("rmainimg")
-    val rmainimg: String,
+    val rmainimg: String?,
     @SerializedName("rinfo")
     val rinfo: String,
     @SerializedName("rtotalstar")
-    val rtotalstar: Long,
+    val rtotalstar: String?,
     @SerializedName("rstaravg")
-    val rstaravg: Double,
+    val rstaravg: String?,
     @SerializedName("rcount")
-    val rcount: Long,
+    val rcount: String?,
 )
