@@ -7,10 +7,10 @@
     android:padding="16dp">
 
     <EditText
-        android:id="@+id/loginId"
+        android:id="@+id/loginEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Id"/>
+        android:hint="Email"/>
 
     <EditText
         android:id="@+id/loginPassword"
@@ -20,6 +20,7 @@
         android:inputType="textPassword"/>
 
     <Button
+        android:id="@+id/loginButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Login"
