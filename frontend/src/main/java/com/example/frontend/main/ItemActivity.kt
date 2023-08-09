@@ -3,17 +3,17 @@ package com.example.frontend.main
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
-import com.example.frontend.member.LoginActivity
 import com.example.frontend.R
 import com.example.frontend.databinding.ActivityItemBinding
+import com.example.frontend.member.LoginActivity
 import com.example.frontend.member.SignupActivity
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -27,9 +27,6 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
     lateinit var toggle: ActionBarDrawerToggle  // 메뉴
     lateinit var binding: ActivityItemBinding
-    val serviceKey =
-        "Jo/F8Pswa2Ul50H9F2/iWeQFCrrF2CuVqL+0cEJJVXlLPLQ0TCqZta52lfANIq63d6lc/4VTIeQoIYEFR84pDQ=="
-    val resultType = "json"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -64,15 +61,19 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
         val intent = intent
 
         // 전달된 값 가져오기
-        val id = intent.getStringExtra("id")
-        val TITLE = intent.getStringExtra("TITLE")
-        val CNTCT_TEL = intent.getStringExtra("CNTCT_TEL")
+        val rid = intent.getLongExtra("rid",0L)
+        val rtitle = intent.getStringExtra("rtitle")
+        val rcity = intent.getStringExtra("rcity")
+        val rtel = intent.getStringExtra("rtel")
+        val rinfo = intent.getStringExtra("rinfo")
 
-
-        binding.id.text = id
-        binding.TITLE.text = TITLE
-        binding.CNTCTTEL.text = CNTCT_TEL
-        val img = intent.getStringExtra("MAIN_IMG_NORMAL")
+        binding.rid.text = rid.toString()
+        binding.rtitle.text = rtitle
+        binding.rcity.text = rcity
+        binding.rtel.text = rtel
+        binding.rinfo.text = rinfo
+        val img = intent.getStringExtra("rmainimg")
+        Log.d("joj",img.toString())
         Glide.with(this)
             .asBitmap()
             .load(img)
@@ -98,8 +99,8 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
     }
     override fun onMapReady(googleMap: GoogleMap) {
         val intent = intent
-        val LAT = intent.getStringExtra("LAT")?.toDoubleOrNull() // String을 Double로 변환
-        val LNG = intent.getStringExtra("LNG")?.toDoubleOrNull()
+        val LAT = intent.getDoubleExtra("rlat",0.0) // String을 Double로 변환
+        val LNG = intent.getDoubleExtra("rlng",0.0)
 
         if (LAT != null && LNG != null) {
             Log.d("joj", LAT.toString())
