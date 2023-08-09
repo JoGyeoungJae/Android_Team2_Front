@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -13,6 +14,7 @@ import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
+import androidx.core.graphics.drawable.toBitmap
 import com.example.frontend.R
 import com.example.frontend.service.ApiService
 import com.example.frontend.dto.User
@@ -158,20 +160,20 @@ class SignupActivity : AppCompatActivity() {
     }
 
 
-    fun uploadInputStream(inputStream: InputStream) {
-        val storageRef = storage.reference
-        val imgRef: StorageReference = storageRef.child("profile_images/test333.jpg")
-
-        val uploadTask = imgRef.putStream(inputStream)
-
-        uploadTask.addOnSuccessListener {
-            // 업로드 성공 시 처리
-            println("이미지 업로드 성공")
-        }.addOnFailureListener {
-            // 업로드 실패 시 처리
-            println("이미지 업로드 실패: ${it.message}")
-        }
-    }
+//    fun uploadInputStream(inputStream: InputStream) {
+//        val storageRef = storage.reference
+//        val imgRef: StorageReference = storageRef.child("profile_images/test333.jpg")
+//
+//        val uploadTask = imgRef.putStream(inputStream)
+//
+//        uploadTask.addOnSuccessListener {
+//            // 업로드 성공 시 처리
+//            println("이미지 업로드 성공")
+//        }.addOnFailureListener {
+//            // 업로드 실패 시 처리
+//            println("이미지 업로드 실패: ${it.message}")
+//        }
+//    }
 
 
 
@@ -202,7 +204,7 @@ class SignupActivity : AppCompatActivity() {
         //2  . 뷰에 선택된 이미지의 파일의 스트림을 읽어서, 이 스트림을 스토리지에 올리기.
         if(checkImg.equals("y")) {
             val storageRef: StorageReference = storage.reference
-            val imgRef: StorageReference = storageRef.child("profile_images/test335.jpg")
+            val imgRef: StorageReference = storageRef.child("profile_images/$uemail.jpg")
             val bitmap = getBitmapFromView(binding.userImageView)
             val baos = ByteArrayOutputStream()
             bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, baos)
@@ -218,7 +220,7 @@ class SignupActivity : AppCompatActivity() {
             }
         } else if (checkImg.equals("n")) {
             val storageRef: StorageReference = storage.reference
-            val imgRef: StorageReference = storageRef.child("profile_images/test334.jpg")
+            val imgRef: StorageReference = storageRef.child("profile_images/$uemail.jpg")
 
             val stream = FileInputStream(File(filePath))
 
@@ -227,6 +229,29 @@ class SignupActivity : AppCompatActivity() {
             Log.d("lsy", imgRef.toString())
             Log.d("lsy", storageRef.toString())
             val uploadTask = imgRef.putStream(stream)
+            uploadTask.addOnSuccessListener {
+                Log.d("lsy", "이미지 업로드 성공")
+                // TODO: 이미지 업로드 성공 시에 할 작업 추가
+            }.addOnFailureListener {
+                Log.e("lsy", "이미지 업로드 실패: ${it.message}")
+                // TODO: 이미지 업로드 실패 시에 할 작업 추가
+            }
+        } else if (checkImg.equals("none")){
+
+            val storageRef: StorageReference = storage.reference
+            val imgRef: StorageReference = storageRef.child("profile_images/$uemail.jpg")
+
+            val drawableId = R.drawable.user_basic // drawable 폴더에 있는 이미지의 리소스 ID
+            val drawable = resources.getDrawable(drawableId, null)
+            val bitmap = (drawable as BitmapDrawable).bitmap
+
+            // 이미지를 스트림으로 변환
+            val stream = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+            val byteArray = stream.toByteArray()
+
+            // 이미지 업로드
+            val uploadTask = imgRef.putBytes(byteArray)
             uploadTask.addOnSuccessListener {
                 Log.d("lsy", "이미지 업로드 성공")
                 // TODO: 이미지 업로드 성공 시에 할 작업 추가
