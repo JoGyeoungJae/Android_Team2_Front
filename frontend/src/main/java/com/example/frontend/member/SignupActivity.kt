@@ -12,6 +12,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.toBitmap
@@ -183,105 +184,114 @@ class SignupActivity : AppCompatActivity() {
         val uname = binding.signupName.text.toString()
         val unickname = binding.signupNickname.text.toString()
 
-        val retrofit = Retrofit.Builder()
-            .baseUrl("http://10.100.103.14:8080/") // Spring Boot 서버의 URL로 변경
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+        if (uemail.isEmpty() || upassword.isEmpty() || uname.isEmpty() || unickname.isEmpty()) {
+            // 어떤 입력값이 비어있으면 토스트 메시지 표시
+            Toast.makeText(this, "모든 값을 입력하세요.", Toast.LENGTH_SHORT).show()
+        }else {
 
-        val apiService = retrofit.create(ApiService::class.java)
+            val retrofit = Retrofit.Builder()
+                .baseUrl("http://10.100.103.14:8080/") // Spring Boot 서버의 URL로 변경
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
 
-        val user = User(uemail, upassword, uname, unickname)
+            val apiService = retrofit.create(ApiService::class.java)
 
-        //스토리지저장ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
-        //스토리지 참조 만들기
-        //갤러리 선택 후, 전달.
-        //여기서 , 이미지 파일을 읽은 스트림 .inputStream . 스토리지 올리기.
+            val user = User(uemail, upassword, uname, unickname)
+
+            //스토리지저장ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+            //스토리지 참조 만들기
+            //갤러리 선택 후, 전달.
+            //여기서 , 이미지 파일을 읽은 스트림 .inputStream . 스토리지 올리기.
 //        if (inputStream != null) {
 //            Log.d("lsy","inputstream 확인: "+ inputStream.toString())
 //            uploadInputStream(inputStream)
 ////            inputStream.close()
 //        }
-        //2  . 뷰에 선택된 이미지의 파일의 스트림을 읽어서, 이 스트림을 스토리지에 올리기.
-        if(checkImg.equals("y")) {
-            val storageRef: StorageReference = storage.reference
-            val imgRef: StorageReference = storageRef.child("profile_images/$uemail.jpg")
-            val bitmap = getBitmapFromView(binding.userImageView)
-            val baos = ByteArrayOutputStream()
-            bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-            val data = baos.toByteArray()
+            //2  . 뷰에 선택된 이미지의 파일의 스트림을 읽어서, 이 스트림을 스토리지에 올리기.
+            if (checkImg.equals("y")) {
+                val storageRef: StorageReference = storage.reference
+                val imgRef: StorageReference = storageRef.child("profile_images/$uemail.jpg")
+                val bitmap = getBitmapFromView(binding.userImageView)
+                val baos = ByteArrayOutputStream()
+                bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+                val data = baos.toByteArray()
 
-            var uploadTask = imgRef.putBytes(data)
-            uploadTask.addOnSuccessListener {
-                Log.d("lsy", "이미지 업로드 성공")
-                // TODO: 이미지 업로드 성공 시에 할 작업 추가
-            }.addOnFailureListener {
-                Log.e("lsy", "이미지 업로드 실패: ${it.message}")
-                // TODO: 이미지 업로드 실패 시에 할 작업 추가
+                var uploadTask = imgRef.putBytes(data)
+                uploadTask.addOnSuccessListener {
+                    Log.d("lsy", "이미지 업로드 성공")
+                    // TODO: 이미지 업로드 성공 시에 할 작업 추가
+                }.addOnFailureListener {
+                    Log.e("lsy", "이미지 업로드 실패: ${it.message}")
+                    // TODO: 이미지 업로드 실패 시에 할 작업 추가
+                }
+            } else if (checkImg.equals("n")) {
+                val storageRef: StorageReference = storage.reference
+                val imgRef: StorageReference = storageRef.child("profile_images/$uemail.jpg")
+
+                val stream = FileInputStream(File(filePath))
+
+                Log.d("lsy", stream.toString())
+                Log.d("lsy", filePath)
+                Log.d("lsy", imgRef.toString())
+                Log.d("lsy", storageRef.toString())
+                val uploadTask = imgRef.putStream(stream)
+                uploadTask.addOnSuccessListener {
+                    Log.d("lsy", "이미지 업로드 성공")
+                    // TODO: 이미지 업로드 성공 시에 할 작업 추가
+                }.addOnFailureListener {
+                    Log.e("lsy", "이미지 업로드 실패: ${it.message}")
+                    // TODO: 이미지 업로드 실패 시에 할 작업 추가
+                }
+            } else if (checkImg.equals("none")) {
+
+                val storageRef: StorageReference = storage.reference
+                val imgRef: StorageReference = storageRef.child("profile_images/$uemail.jpg")
+
+                val drawableId = R.drawable.user_basic // drawable 폴더에 있는 이미지의 리소스 ID
+                val drawable = resources.getDrawable(drawableId, null)
+                val bitmap = (drawable as BitmapDrawable).bitmap
+
+                // 이미지를 스트림으로 변환
+                val stream = ByteArrayOutputStream()
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+                val byteArray = stream.toByteArray()
+
+                // 이미지 업로드
+                val uploadTask = imgRef.putBytes(byteArray)
+                uploadTask.addOnSuccessListener {
+                    Log.d("lsy", "이미지 업로드 성공")
+                    // TODO: 이미지 업로드 성공 시에 할 작업 추가
+                }.addOnFailureListener {
+                    Log.e("lsy", "이미지 업로드 실패: ${it.message}")
+                    // TODO: 이미지 업로드 실패 시에 할 작업 추가
+                }
             }
-        } else if (checkImg.equals("n")) {
-            val storageRef: StorageReference = storage.reference
-            val imgRef: StorageReference = storageRef.child("profile_images/$uemail.jpg")
-
-            val stream = FileInputStream(File(filePath))
-
-            Log.d("lsy", stream.toString())
-            Log.d("lsy", filePath)
-            Log.d("lsy", imgRef.toString())
-            Log.d("lsy", storageRef.toString())
-            val uploadTask = imgRef.putStream(stream)
-            uploadTask.addOnSuccessListener {
-                Log.d("lsy", "이미지 업로드 성공")
-                // TODO: 이미지 업로드 성공 시에 할 작업 추가
-            }.addOnFailureListener {
-                Log.e("lsy", "이미지 업로드 실패: ${it.message}")
-                // TODO: 이미지 업로드 실패 시에 할 작업 추가
-            }
-        } else if (checkImg.equals("none")){
-
-            val storageRef: StorageReference = storage.reference
-            val imgRef: StorageReference = storageRef.child("profile_images/$uemail.jpg")
-
-            val drawableId = R.drawable.user_basic // drawable 폴더에 있는 이미지의 리소스 ID
-            val drawable = resources.getDrawable(drawableId, null)
-            val bitmap = (drawable as BitmapDrawable).bitmap
-
-            // 이미지를 스트림으로 변환
-            val stream = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-            val byteArray = stream.toByteArray()
-
-            // 이미지 업로드
-            val uploadTask = imgRef.putBytes(byteArray)
-            uploadTask.addOnSuccessListener {
-                Log.d("lsy", "이미지 업로드 성공")
-                // TODO: 이미지 업로드 성공 시에 할 작업 추가
-            }.addOnFailureListener {
-                Log.e("lsy", "이미지 업로드 실패: ${it.message}")
-                // TODO: 이미지 업로드 실패 시에 할 작업 추가
-            }
-        }
 
 
 //
 
-        //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+            //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 
-        val call = apiService.signup(user)
-        call.enqueue(object : Callback<User> {
-            override fun onResponse(call: Call<User>, response: Response<User>) {
-                if (response.isSuccessful) {
-                    // 성공적으로 응답을 받았을 때의 처리
-                    Log.d("lsy", "응답 왔어.")
-                } else {
-                    // 서버로부터 에러 응답을 받았을 때의 처리
+            val call = apiService.signup(user)
+            call.enqueue(object : Callback<User> {
+                override fun onResponse(call: Call<User>, response: Response<User>) {
+                    if (response.isSuccessful) {
+                        // 성공적으로 응답을 받았을 때의 처리
+                        Log.d("lsy", "응답 왔어.")
+                    } else {
+                        // 서버로부터 에러 응답을 받았을 때의 처리
+                    }
                 }
-            }
 
-            override fun onFailure(call: Call<User>, t: Throwable) {
-                Log.e("NetworkError", "Error occurred: ${t.message}")
-                // 네트워크 오류 등의 실패 처리
-            }
-        })
+                override fun onFailure(call: Call<User>, t: Throwable) {
+                    Log.e("NetworkError", "Error occurred: ${t.message}")
+                    // 네트워크 오류 등의 실패 처리
+                }
+            })
+
+
+        }
+
     }
 
 
