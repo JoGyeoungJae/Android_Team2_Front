@@ -38,7 +38,7 @@
             android:id="@+id/galleryButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Gallery App"
+            android:text="갤러리"
             android:layout_gravity="center_vertical"
             android:layout_marginRight="20dp"
             />
@@ -46,7 +46,7 @@
             android:id="@+id/cameraButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Camera App"
+            android:text="카메라"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="20dp"
             />
@@ -81,7 +81,8 @@
         android:id="@+id/signupButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sign Up"
-        android:onClick="signupButtonClicked"/>
+        android:text="회원가입"
+        android:onClick="signupButtonClicked"
+        android:layout_gravity="center_horizontal"/>
 
 </LinearLayout>
