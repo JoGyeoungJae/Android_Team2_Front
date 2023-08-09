@@ -41,6 +41,13 @@ android {
 }
 
 dependencies {
+    //firebase storage
+    implementation 'com.google.firebase:firebase-storage-ktx'
+
+    //firebase
+    implementation(platform("com.google.firebase:firebase-bom:32.2.2"))
+    implementation("com.google.firebase:firebase-analytics-ktx")
+
     //Retrofit
 //    implementation 'com.squareup.retrofit2:retrofit:2.x.x'
 //    implementation 'com.squareup.retrofit2:converter-gson:2.x.x'

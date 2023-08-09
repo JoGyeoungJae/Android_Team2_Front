@@ -23,7 +23,6 @@
         <activity
             android:name=".restaurant.AddRestaurantActivity"
             android:exported="true" />
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCWwonIHNWkOKA1HeBlUKkgL1kBIk0_iWg" />
