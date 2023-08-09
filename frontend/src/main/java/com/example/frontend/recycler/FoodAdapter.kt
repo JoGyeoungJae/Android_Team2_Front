@@ -1,4 +1,4 @@
-package com.example.myexample.recycler
+package com.example.frontend.recycler
 
 import android.content.Context
 import android.content.Intent
@@ -11,14 +11,14 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.example.frontend.databinding.ItemMainBinding
-import com.example.frontend.main.ItemActivity
-import com.example.frontend.restaurant.ItemModel4
+import com.example.frontend.dto.FoodInfo
+import com.example.frontend.restaurant.ItemActivity
 
 
 //부산맛집
 class MyViewHolder2(val binding: ItemMainBinding): RecyclerView.ViewHolder(binding.root)
 
-class MyAdapter2(val context: Context, val datas: List<ItemModel4>?): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+class MyAdapter2(val context: Context, val datas: List<FoodInfo?>?): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     override fun getItemCount(): Int{
         return datas?.size ?: 0
@@ -31,10 +31,10 @@ class MyAdapter2(val context: Context, val datas: List<ItemModel4>?): RecyclerVi
         val binding=(holder as MyViewHolder2).binding
 
         //도보 여행
-        val user = datas?.get(position)
-        binding.firstNameView.text = user?.TITLE
-        val urlImg = user?.MAIN_IMG_NORMAL
-        binding.contactView.text = user?.CNTCT_TEL
+        val food = datas?.get(position)
+        binding.firstNameView.text = food?.rtitle
+        val urlImg = food?.rmainimg
+        binding.contactView.text = food?.rtel
 
         Glide.with(context)
             .asBitmap()
@@ -52,15 +52,17 @@ class MyAdapter2(val context: Context, val datas: List<ItemModel4>?): RecyclerVi
                     TODO("Not yet implemented")
                 }
             })
-        val binding2=(holder as MyViewHolder2).binding
         holder.itemView.setOnClickListener {
             val intent = Intent(context, ItemActivity::class.java)
-            intent.putExtra("id",user?.UC_SEQ)
-            intent.putExtra("TITLE",user?.TITLE)
-            intent.putExtra("CNTCT_TEL",user?.CNTCT_TEL)
-            intent.putExtra("LAT",user?.LAT)
-            intent.putExtra("LNG",user?.LNG)
-            intent.putExtra("MAIN_IMG_NORMAL",user?.MAIN_IMG_NORMAL)
+
+            intent.putExtra("rid",food?.rid)
+            intent.putExtra("rtitle",food?.rtitle)
+            intent.putExtra("rcity",food?.rcity)
+            intent.putExtra("rlat",food?.rlat)
+            intent.putExtra("rlng",food?.rlng)
+            intent.putExtra("rtel",food?.rtel)
+            intent.putExtra("rinfo",food?.rinfo)
+            intent.putExtra("rmainimg",food?.rmainimg)
 
             context.startActivity(intent)
         }

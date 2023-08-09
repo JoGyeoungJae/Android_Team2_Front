@@ -2,6 +2,9 @@ package com.example.frontend.restaurant
 
 import android.app.Application
 import com.example.frontend.retrofit.NetworkService
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.ktx.storage
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -19,4 +22,5 @@ class MyApplication: Application(){
     init {
         networkService = retrofit.create(NetworkService::class.java)
     }
+
 }

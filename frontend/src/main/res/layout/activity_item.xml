@@ -6,52 +6,99 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        >
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimary"/>
         <TextView
-            android:id="@+id/id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="30sp" />
+            android:text="순번"
+            android:textSize="20sp"
+            android:layout_marginTop="20dp"/>
         <TextView
-            android:id="@+id/TITLE"
+            android:id="@+id/rid"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="30sp" />
+            android:textSize="20sp" />
         <TextView
-            android:id="@+id/CNTCT_TEL"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="30sp"/>
+            android:text="식당명"
+            android:textSize="20sp"
+            android:layout_marginTop="20dp"/>
         <TextView
-            android:id="@+id/LAT"
+            android:id="@+id/rtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="30sp" />
+            android:textSize="20sp" />
         <TextView
-            android:id="@+id/LNG"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="30sp"/>
+            android:text="주소"
+            android:textSize="20sp"
+            android:layout_marginTop="20dp"/>
+        <TextView
+            android:id="@+id/rcity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="전화번호"
+            android:textSize="20sp"
+            android:layout_marginTop="20dp"/>
+        <TextView
+            android:id="@+id/rtel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20sp" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="상세 설명"
+            android:textSize="20sp"
+            android:layout_marginTop="20dp"/>
+        <TextView
+            android:id="@+id/rinfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="구글맵"
+            android:textSize="20sp"
+            android:layout_marginTop="20dp"/>
         <fragment xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/map"
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
             android:layout_height="300dp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="대표이미지"
+            android:textSize="20sp"
+            android:layout_marginTop="20dp"/>
         <ImageView
             android:id="@+id/imgpath"
             android:layout_width="300dp"
             android:layout_height="match_parent"
             android:layout_gravity="center_horizontal|center_vertical"/>
     </LinearLayout>
+    </ScrollView>
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/main_drawer_view"
         android:layout_width="wrap_content"
