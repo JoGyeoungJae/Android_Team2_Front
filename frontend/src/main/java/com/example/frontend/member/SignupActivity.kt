@@ -20,6 +20,7 @@ import com.example.frontend.R
 import com.example.frontend.service.ApiService
 import com.example.frontend.dto.User
 import com.example.frontend.databinding.ActivitySignupBinding
+import com.example.frontend.main.MainActivity
 import com.google.firebase.FirebaseApp
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageMetadata
@@ -278,6 +279,7 @@ class SignupActivity : AppCompatActivity() {
                     if (response.isSuccessful) {
                         // 성공적으로 응답을 받았을 때의 처리
                         Log.d("lsy", "응답 왔어.")
+
                     } else {
                         // 서버로부터 에러 응답을 받았을 때의 처리
                     }
@@ -289,6 +291,12 @@ class SignupActivity : AppCompatActivity() {
                 }
             })
 
+
+
+            //정상적으로 동작하면 다른 화면으로 이동하게끔
+            Toast.makeText(this, "회원가입 완료!", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this@SignupActivity, MainActivity::class.java)
+            startActivity(intent)
 
         }
 
