@@ -2,6 +2,7 @@ package com.example.frontend.member
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import com.example.frontend.databinding.ActivityLoginBinding
 
 class LoginActivity : AppCompatActivity() {
