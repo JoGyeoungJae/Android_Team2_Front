@@ -10,4 +10,7 @@ data class User(
     @SerializedName("uname")
     val uname:String,
     @SerializedName("unickname")
-    val unickname: String )
+    val unickname: String,
+    @SerializedName("uimg")
+    val uimg: String
+    )

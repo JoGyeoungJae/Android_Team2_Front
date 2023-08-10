@@ -55,8 +55,11 @@ class SignupActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySignupBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        checkImg = "none"
 
+        //checkImg="y" <- 갤러리에서 선택한 이미지
+        //checkImg="n" <- 카메라로 찍어서 선택한 이미지
+        //checkImg="none" <- drawable에 저장된 기본이미지
+        checkImg = "none"
 
 
 
@@ -154,28 +157,13 @@ class SignupActivity : AppCompatActivity() {
 
 
 
-        //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
         //스프링에 데이터보내는 부분
         binding.signupButton.setOnClickListener {
             signUp()
         }
     }
 
-
-//    fun uploadInputStream(inputStream: InputStream) {
-//        val storageRef = storage.reference
-//        val imgRef: StorageReference = storageRef.child("profile_images/test333.jpg")
-//
-//        val uploadTask = imgRef.putStream(inputStream)
-//
-//        uploadTask.addOnSuccessListener {
-//            // 업로드 성공 시 처리
-//            println("이미지 업로드 성공")
-//        }.addOnFailureListener {
-//            // 업로드 실패 시 처리
-//            println("이미지 업로드 실패: ${it.message}")
-//        }
-//    }
 
 
 
@@ -189,24 +177,14 @@ class SignupActivity : AppCompatActivity() {
             // 어떤 입력값이 비어있으면 토스트 메시지 표시
             Toast.makeText(this, "모든 값을 입력하세요.", Toast.LENGTH_SHORT).show()
         }else {
+            //모든 값이 입력되어 있다면 동작
 
-            val retrofit = Retrofit.Builder()
-                .baseUrl("http://10.100.103.14:8080/") // Spring Boot 서버의 URL로 변경
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-
-            val apiService = retrofit.create(ApiService::class.java)
-
-            val user = User(uemail, upassword, uname, unickname)
-
-            //스토리지저장ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
-            //스토리지 참조 만들기
-            //갤러리 선택 후, 전달.
+            //이미지 스토리지에 저장ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
             //여기서 , 이미지 파일을 읽은 스트림 .inputStream . 스토리지 올리기.
 //        if (inputStream != null) {
 //            Log.d("lsy","inputstream 확인: "+ inputStream.toString())
 //            uploadInputStream(inputStream)
-////            inputStream.close()
+//            inputStream.close()
 //        }
             //2  . 뷰에 선택된 이미지의 파일의 스트림을 읽어서, 이 스트림을 스토리지에 올리기.
             if (checkImg.equals("y")) {
@@ -218,9 +196,46 @@ class SignupActivity : AppCompatActivity() {
                 val data = baos.toByteArray()
 
                 var uploadTask = imgRef.putBytes(data)
-                uploadTask.addOnSuccessListener {
+                uploadTask.addOnSuccessListener {_ ->
                     Log.d("lsy", "이미지 업로드 성공")
-                    // TODO: 이미지 업로드 성공 시에 할 작업 추가
+                    // 이미지 업로드 후 다운로드 URL 가져오기
+                    imgRef.downloadUrl.addOnSuccessListener { uri ->
+                        val downloadUrl = uri.toString()
+                        Log.d("lsy", "Download URL: $downloadUrl")
+                        val uimg = downloadUrl
+
+                        // TODO: 필요한 대로 downloadUrl을 사용합니다.
+                        //서버로 값 전송
+                        val retrofit = Retrofit.Builder()
+                            .baseUrl("http://10.100.103.14:8080/") // Spring Boot 서버의 URL로 변경
+                            .addConverterFactory(GsonConverterFactory.create())
+                            .build()
+
+                        val user = User(uemail, upassword, uname, unickname, uimg)
+                        val apiService = retrofit.create(ApiService::class.java)
+
+                        val call = apiService.signup(user)
+                        call.enqueue(object : Callback<User> {
+                            override fun onResponse(call: Call<User>, response: Response<User>) {
+                                if (response.isSuccessful) {
+                                    // 성공적으로 응답을 받았을 때의 처리
+                                    Log.d("lsy", "응답 왔어.")
+
+                                } else {
+                                    // 서버로부터 에러 응답을 받았을 때의 처리
+                                }
+                            }
+
+                            override fun onFailure(call: Call<User>, t: Throwable) {
+                                Log.e("NetworkError", "Error occurred: ${t.message}")
+                                // 네트워크 오류 등의 실패 처리
+                            }
+                        })
+
+
+                    }.addOnFailureListener { exception ->
+                        Log.e("lsy", "다운로드 URL 가져오기 실패: ${exception.message}")
+                    }
                 }.addOnFailureListener {
                     Log.e("lsy", "이미지 업로드 실패: ${it.message}")
                     // TODO: 이미지 업로드 실패 시에 할 작업 추가
@@ -231,14 +246,52 @@ class SignupActivity : AppCompatActivity() {
 
                 val stream = FileInputStream(File(filePath))
 
-                Log.d("lsy", stream.toString())
-                Log.d("lsy", filePath)
-                Log.d("lsy", imgRef.toString())
                 Log.d("lsy", storageRef.toString())
+                Log.d("lsy", imgRef.toString())
+                Log.d("lsy", filePath)
+                Log.d("lsy", stream.toString())
+
                 val uploadTask = imgRef.putStream(stream)
-                uploadTask.addOnSuccessListener {
+                uploadTask.addOnSuccessListener {_ ->
                     Log.d("lsy", "이미지 업로드 성공")
-                    // TODO: 이미지 업로드 성공 시에 할 작업 추가
+                    // 이미지 업로드 후 다운로드 URL 가져오기
+                    imgRef.downloadUrl.addOnSuccessListener { uri ->
+                        val downloadUrl = uri.toString()
+                        Log.d("lsy", "Download URL: $downloadUrl")
+                        val uimg = downloadUrl
+
+                        // TODO: 필요한 대로 downloadUrl을 사용합니다.
+                        //서버로 값 전송
+                        val retrofit = Retrofit.Builder()
+                            .baseUrl("http://10.100.103.14:8080/") // Spring Boot 서버의 URL로 변경
+                            .addConverterFactory(GsonConverterFactory.create())
+                            .build()
+
+                        val user = User(uemail, upassword, uname, unickname, uimg)
+                        val apiService = retrofit.create(ApiService::class.java)
+
+                        val call = apiService.signup(user)
+                        call.enqueue(object : Callback<User> {
+                            override fun onResponse(call: Call<User>, response: Response<User>) {
+                                if (response.isSuccessful) {
+                                    // 성공적으로 응답을 받았을 때의 처리
+                                    Log.d("lsy", "응답 왔어.")
+
+                                } else {
+                                    // 서버로부터 에러 응답을 받았을 때의 처리
+                                }
+                            }
+
+                            override fun onFailure(call: Call<User>, t: Throwable) {
+                                Log.e("NetworkError", "Error occurred: ${t.message}")
+                                // 네트워크 오류 등의 실패 처리
+                            }
+                        })
+
+
+                    }.addOnFailureListener { exception ->
+                        Log.e("lsy", "다운로드 URL 가져오기 실패: ${exception.message}")
+                    }
                 }.addOnFailureListener {
                     Log.e("lsy", "이미지 업로드 실패: ${it.message}")
                     // TODO: 이미지 업로드 실패 시에 할 작업 추가
@@ -259,37 +312,58 @@ class SignupActivity : AppCompatActivity() {
 
                 // 이미지 업로드
                 val uploadTask = imgRef.putBytes(byteArray)
-                uploadTask.addOnSuccessListener {
+                uploadTask.addOnSuccessListener {_ ->
                     Log.d("lsy", "이미지 업로드 성공")
-                    // TODO: 이미지 업로드 성공 시에 할 작업 추가
+                    // 이미지 업로드 후 다운로드 URL 가져오기
+                    imgRef.downloadUrl.addOnSuccessListener { uri ->
+                        val downloadUrl = uri.toString()
+                        Log.d("lsy", "Download URL: $downloadUrl")
+                        val uimg = downloadUrl
+
+                        // TODO: 필요한 대로 downloadUrl을 사용합니다.
+                        //서버로 값 전송
+                        val retrofit = Retrofit.Builder()
+                            .baseUrl("http://10.100.103.14:8080/") // Spring Boot 서버의 URL로 변경
+                            .addConverterFactory(GsonConverterFactory.create())
+                            .build()
+
+                        val user = User(uemail, upassword, uname, unickname, uimg)
+                        val apiService = retrofit.create(ApiService::class.java)
+
+                        val call = apiService.signup(user)
+                        call.enqueue(object : Callback<User> {
+                            override fun onResponse(call: Call<User>, response: Response<User>) {
+                                if (response.isSuccessful) {
+                                    // 성공적으로 응답을 받았을 때의 처리
+                                    Log.d("lsy", "응답 왔어.")
+
+                                } else {
+                                    // 서버로부터 에러 응답을 받았을 때의 처리
+                                }
+                            }
+
+                            override fun onFailure(call: Call<User>, t: Throwable) {
+                                Log.e("NetworkError", "Error occurred: ${t.message}")
+                                // 네트워크 오류 등의 실패 처리
+                            }
+                        })
+
+
+                    }.addOnFailureListener { exception ->
+                        Log.e("lsy", "다운로드 URL 가져오기 실패: ${exception.message}")
+                    }
                 }.addOnFailureListener {
                     Log.e("lsy", "이미지 업로드 실패: ${it.message}")
                     // TODO: 이미지 업로드 실패 시에 할 작업 추가
                 }
             }
+            //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 
 
-//
 
-            //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 
-            val call = apiService.signup(user)
-            call.enqueue(object : Callback<User> {
-                override fun onResponse(call: Call<User>, response: Response<User>) {
-                    if (response.isSuccessful) {
-                        // 성공적으로 응답을 받았을 때의 처리
-                        Log.d("lsy", "응답 왔어.")
 
-                    } else {
-                        // 서버로부터 에러 응답을 받았을 때의 처리
-                    }
-                }
 
-                override fun onFailure(call: Call<User>, t: Throwable) {
-                    Log.e("NetworkError", "Error occurred: ${t.message}")
-                    // 네트워크 오류 등의 실패 처리
-                }
-            })
 
 
 
