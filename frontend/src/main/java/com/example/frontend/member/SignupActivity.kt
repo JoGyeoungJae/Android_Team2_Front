@@ -344,7 +344,7 @@ class SignupActivity : AppCompatActivity() {
 
                             override fun onFailure(call: Call<User>, t: Throwable) {
                                 Log.e("NetworkError", "Error occurred: ${t.message}")
-                                // 네트워크 오류 등의 실패 처리
+                                // 네트워크 오류 등의 실패처리
                             }
                         })
 
