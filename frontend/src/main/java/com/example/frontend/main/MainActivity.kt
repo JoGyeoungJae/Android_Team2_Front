@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
-import android.view.View
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -14,6 +13,7 @@ import com.example.frontend.R
 import com.example.frontend.member.LoginActivity
 import com.example.frontend.member.SignupActivity
 import com.example.frontend.databinding.ActivityMainBinding
+import com.example.frontend.restaurant.AddRestaurantActivity
 
 
 class MainActivity : AppCompatActivity() {
@@ -45,6 +45,9 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
             }else if(it.itemId == R.id.login){
                 val intent = Intent(this, LoginActivity::class.java)
+                startActivity(intent)
+            }else if(it.itemId == R.id.addrestaurant){
+                val intent = Intent(this, AddRestaurantActivity::class.java)
                 startActivity(intent)
             }
             true

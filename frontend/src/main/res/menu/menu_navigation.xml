@@ -7,7 +7,8 @@
         android:id="@+id/login"
         android:title="로그인"/>
     <item
-        android:title="아이템3"/>
+        android:id="@+id/addrestaurant"
+        android:title="맛집등록"/>
     <item
         android:title="아이템4"/>
 
