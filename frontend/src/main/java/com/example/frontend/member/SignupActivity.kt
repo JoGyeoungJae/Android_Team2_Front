@@ -207,7 +207,7 @@ class SignupActivity : AppCompatActivity() {
                         // TODO: 필요한 대로 downloadUrl을 사용합니다.
                         //서버로 값 전송
                         val retrofit = Retrofit.Builder()
-                            .baseUrl("http://10.100.103.14:8080/") // Spring Boot 서버의 URL로 변경
+                            .baseUrl("http://10.100.103.16:8080/") // Spring Boot 서버의 URL로 변경
                             .addConverterFactory(GsonConverterFactory.create())
                             .build()
 
@@ -263,7 +263,7 @@ class SignupActivity : AppCompatActivity() {
                         // TODO: 필요한 대로 downloadUrl을 사용합니다.
                         //서버로 값 전송
                         val retrofit = Retrofit.Builder()
-                            .baseUrl("http://10.100.103.14:8080/") // Spring Boot 서버의 URL로 변경
+                            .baseUrl("http://10.100.103.16:8080/") // Spring Boot 서버의 URL로 변경
                             .addConverterFactory(GsonConverterFactory.create())
                             .build()
 
@@ -323,7 +323,7 @@ class SignupActivity : AppCompatActivity() {
                         // TODO: 필요한 대로 downloadUrl을 사용합니다.
                         //서버로 값 전송
                         val retrofit = Retrofit.Builder()
-                            .baseUrl("http://10.100.103.14:8080/") // Spring Boot 서버의 URL로 변경
+                            .baseUrl("http://10.100.103.16:8080/") // Spring Boot 서버의 URL로 변경
                             .addConverterFactory(GsonConverterFactory.create())
                             .build()
 
@@ -331,6 +331,9 @@ class SignupActivity : AppCompatActivity() {
                         val apiService = retrofit.create(ApiService::class.java)
 
                         val call = apiService.signup(user)
+
+                        Log.d("lsy", "1111")
+
                         call.enqueue(object : Callback<User> {
                             override fun onResponse(call: Call<User>, response: Response<User>) {
                                 if (response.isSuccessful) {
@@ -357,6 +360,7 @@ class SignupActivity : AppCompatActivity() {
                     // TODO: 이미지 업로드 실패 시에 할 작업 추가
                 }
             }
+            Log.d("lsy", "2222")
             //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 
 
