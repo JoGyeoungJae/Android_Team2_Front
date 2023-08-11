@@ -32,7 +32,7 @@
             android:exported="false" />
         <activity
             android:name=".restaurant.ItemActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".IntroActivity"
             android:exported="true">
