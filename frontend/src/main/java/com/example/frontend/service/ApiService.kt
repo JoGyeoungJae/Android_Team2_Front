@@ -1,5 +1,6 @@
 package com.example.frontend.service
 
+import com.example.frontend.dto.Login
 import com.example.frontend.dto.User
 import retrofit2.Call
 import retrofit2.http.Body
@@ -18,4 +19,13 @@ interface ApiService {
 fun signup(
  @Body user: User
 ): Call<User>
+
+
+@POST("login")
+fun login(
+ @Body login: Login
+): Call<Login>
+
+
+
 }
