@@ -6,6 +6,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.frontend.databinding.ActivityDetailBinding
+import com.example.frontend.db.DBConnect
 import com.example.frontend.dto.Comment
 import com.example.frontend.dto.CommentWithRating
 import com.example.frontend.service.ApiService
@@ -70,10 +71,7 @@ class DetailActivity : AppCompatActivity() {
 //                val formattedTime = dataFormat.format(Date(currentTime))
 
                 //Retrofit 인스턴스 생성
-                val retrofit = Retrofit.Builder()
-                    .baseUrl("http://10.100.103.15:8080") //백엔드 API 주소
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build()
+                val retrofit = DBConnect.retrofit
 
                 val comment = Comment(cmt, formattedTime) //Comment 클래스는 댓글 데이터 모델을 나타냄
                 val apiService = retrofit.create(ApiService::class.java)

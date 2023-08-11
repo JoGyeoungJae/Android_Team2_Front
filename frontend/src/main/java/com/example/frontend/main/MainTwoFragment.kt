@@ -9,14 +9,13 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.frontend.databinding.FragmentMainTwoBinding
+import com.example.frontend.db.DBConnect
 import com.example.frontend.dto.FoodInfo
 import com.example.frontend.recycler.MyAdapter2
 import com.example.frontend.service.FoodInfoService
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -39,10 +38,7 @@ class MainTwoFragment : Fragment() {
         binding = FragmentMainTwoBinding.inflate(inflater, container, false)
         // binding 초기화
         // Inflate the layout for this fragment
-        val retrofit = Retrofit.Builder()
-            .baseUrl("http://10.100.103.71:8080/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+        val retrofit = DBConnect.retrofit
 
         foodinfoService = retrofit.create(FoodInfoService::class.java)
 
