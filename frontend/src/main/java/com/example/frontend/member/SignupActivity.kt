@@ -222,7 +222,7 @@ class SignupActivity : AppCompatActivity() {
                                     Log.d("lsy", "응답 왔어.")
 
                                 } else {
-                                    // 서버로부터 에러 응답을 받았을 때의 처리
+                                    // 서버로부터 에러 응답을 받았을 때 처리
                                 }
                             }
 
