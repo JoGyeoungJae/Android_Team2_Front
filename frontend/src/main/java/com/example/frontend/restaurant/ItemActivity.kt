@@ -16,6 +16,7 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.example.frontend.R
 import com.example.frontend.databinding.ActivityItemBinding
+import com.example.frontend.db.DBConnect
 import com.example.frontend.dto.Comment
 import com.example.frontend.dto.CommentWithRating
 import com.example.frontend.member.LoginActivity
@@ -144,10 +145,7 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
 //                val formattedTime = dataFormat.format(Date(currentTime))
 
                 //Retrofit 인스턴스 생성
-                val retrofit = Retrofit.Builder()
-                    .baseUrl("http://10.100.103.71:8080/") //백엔드 API 주소
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build()
+                val retrofit = DBConnect.retrofit
 
                 val comment = Comment(cmt, formattedTime) //Comment 클래스는 댓글 데이터 모델을 나타냄
                 val apiService = retrofit.create(ApiService::class.java)

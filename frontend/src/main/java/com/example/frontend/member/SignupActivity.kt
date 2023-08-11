@@ -20,6 +20,7 @@ import com.example.frontend.R
 import com.example.frontend.service.ApiService
 import com.example.frontend.dto.User
 import com.example.frontend.databinding.ActivitySignupBinding
+import com.example.frontend.db.DBConnect
 import com.example.frontend.main.MainActivity
 import com.google.firebase.FirebaseApp
 import com.google.firebase.ktx.Firebase
@@ -206,10 +207,7 @@ class SignupActivity : AppCompatActivity() {
 
                         // TODO: 필요한 대로 downloadUrl을 사용합니다.
                         //서버로 값 전송
-                        val retrofit = Retrofit.Builder()
-                            .baseUrl("http://10.100.103.16:8080/") // Spring Boot 서버의 URL로 변경
-                            .addConverterFactory(GsonConverterFactory.create())
-                            .build()
+                        val retrofit = DBConnect.retrofit
 
                         val user = User(uemail, upassword, uname, unickname, uimg)
                         val apiService = retrofit.create(ApiService::class.java)
@@ -262,10 +260,7 @@ class SignupActivity : AppCompatActivity() {
 
                         // TODO: 필요한 대로 downloadUrl을 사용합니다.
                         //서버로 값 전송
-                        val retrofit = Retrofit.Builder()
-                            .baseUrl("http://10.100.103.16:8080/") // Spring Boot 서버의 URL로 변경
-                            .addConverterFactory(GsonConverterFactory.create())
-                            .build()
+                        val retrofit = DBConnect.retrofit
 
                         val user = User(uemail, upassword, uname, unickname, uimg)
                         val apiService = retrofit.create(ApiService::class.java)
@@ -322,10 +317,7 @@ class SignupActivity : AppCompatActivity() {
 
                         // TODO: 필요한 대로 downloadUrl을 사용합니다.
                         //서버로 값 전송
-                        val retrofit = Retrofit.Builder()
-                            .baseUrl("http://10.100.103.16:8080/") // Spring Boot 서버의 URL로 변경
-                            .addConverterFactory(GsonConverterFactory.create())
-                            .build()
+                        val retrofit = DBConnect.retrofit
 
                         val user = User(uemail, upassword, uname, unickname, uimg)
                         val apiService = retrofit.create(ApiService::class.java)

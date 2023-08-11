@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.frontend.databinding.ActivityAddRestaurantBinding
+import com.example.frontend.db.DBConnect
 import com.example.frontend.dto.FoodInfo
 import com.example.frontend.service.FoodInfoService
 import com.google.firebase.ktx.Firebase
@@ -117,10 +118,7 @@ class AddRestaurantActivity : AppCompatActivity() {
                 val imageUrl = downloadUrl.toString()
                 Toast.makeText(this, "save ok..", Toast.LENGTH_SHORT).show()
                 Log.d("joj", "Image URL: $imageUrl")
-                val retrofit = Retrofit.Builder()
-                    .baseUrl("http://10.100.103.71:8080/")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build()
+                val retrofit = DBConnect.retrofit
 
                 val rtitle = binding.rtitle.text
                 val rcity = binding.rcity.text
