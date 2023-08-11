@@ -46,6 +46,7 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
     private val comments = mutableListOf<CommentWithRating>()
 
 
+    //1
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
