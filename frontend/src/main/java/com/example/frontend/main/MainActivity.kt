@@ -18,7 +18,7 @@ import com.example.frontend.restaurant.AddRestaurantActivity
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
-    lateinit var toggle: ActionBarDrawerToggle  // 메뉴
+    lateinit var toggle: ActionBarDrawerToggle  // 메뉴11
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
