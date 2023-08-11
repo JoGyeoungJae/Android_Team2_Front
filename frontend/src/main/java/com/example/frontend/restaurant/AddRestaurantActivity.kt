@@ -1,20 +1,21 @@
 package com.example.frontend.restaurant
 
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.frontend.databinding.ActivityAddRestaurantBinding
 import com.example.frontend.dto.FoodInfo
 import com.example.frontend.service.FoodInfoService
-import com.example.frontend.util.StorageApplication
-import com.example.frontend.util.StorageApplication.Companion.storage
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
@@ -23,11 +24,8 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.io.File
-import java.io.FileInputStream
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
+import java.io.ByteArrayOutputStream
+import java.util.UUID
 
 class AddRestaurantActivity : AppCompatActivity() {
     //SHA1: 2F:60:49:C4:A4:71:5B:60:ED:7E:42:24:76:7E:DE:D4:5C:2E:E0:87
@@ -55,46 +53,18 @@ class AddRestaurantActivity : AppCompatActivity() {
             requestLauncher.launch(intent)
         }
         binding.addSave.setOnClickListener {
-            val retrofit = Retrofit.Builder()
-                .baseUrl("http://10.100.103.71:8080/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
+            if(binding.addImageView.drawable !== null){
+                //store 에 먼저 데이터를 저장후 document id 값으로 업로드 파일 이름 지정
+                Log.d("joj","@@@@@@@@@@@@@")
 
-            val rtitle = binding.rtitle.text
-            val rcity = binding.rcity.text
-            val rlat = binding.rlat.text
-            val rlng = binding.rlng.text
-            val rtel = binding.rtel.text
-            val rinfo = binding.rinfo.text
+                val uuid = UUID.randomUUID()
+                uploadImage(uuid.toString())
+            }else {
+                Toast.makeText(this, "데이터가 모두 입력되지 않았습니다.", Toast.LENGTH_SHORT).show()
+            }
 
-            foodinfoService = retrofit.create(FoodInfoService::class.java)
-            val foodInfo = FoodInfo(null,rtitle.toString(), rcity.toString(), rlat.toString(), rlng.toString(),  rtel.toString(),null, rinfo.toString(),null,null ,null)
-            val call = foodinfoService.postFoodInfo(foodInfo)
-            call.enqueue(object : Callback<FoodInfo> {
-                override fun onResponse(call: Call<FoodInfo>, response: Response<FoodInfo>) {
-                    if (response.isSuccessful) {
-                        // 서버로부터 응답이 성공적으로 돌아온 경우 처리할 내용
-                        // 예: Toast 메시지 표시 등
-                    } else {
-                        // 서버로부터 응답이 실패한 경우 처리할 내용
-                        // 예: 에러 메시지 표시 등
-                    }
-                }
 
-                override fun onFailure(call: Call<FoodInfo>, t: Throwable) {
-                    // 통신에 실패한 경우 처리할 내용
-                    // 예: 에러 메시지 표시 등
-                }
-            })
 
-//            if(binding.addImageView.drawable !== null){
-//                //store 에 먼저 데이터를 저장후 document id 값으로 업로드 파일 이름 지정
-//                Log.d("joj","@@@@@@@@@@@@@")
-//                uploadImage("testjojojo")
-////                saveStore()
-//            }else {
-//                Toast.makeText(this, "데이터가 모두 입력되지 않았습니다.", Toast.LENGTH_SHORT).show()
-//            }
 
         }
 
@@ -134,24 +104,65 @@ class AddRestaurantActivity : AppCompatActivity() {
     }
     private fun uploadImage(docId: String){
         //add............................
-
         val storageRef: StorageReference = storage.reference
         val imgRef: StorageReference = storageRef.child("profile_images/$docId.jpg")
+        val bitmap = getBitmapFromView(binding.addImageView)
+        val baos = ByteArrayOutputStream()
+        bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+        val data = baos.toByteArray()
 
-
-        val stream = FileInputStream(File(filePath))
-        //imgRefㄹ의 기능중 putFile 경로의 파일을 업로드 하는 기능
-        imgRef.putStream(stream)
-            //이미지 업로드가 성공 하면 수행
-            .addOnSuccessListener {
+        var uploadTask = imgRef.putBytes(data)
+        uploadTask.addOnSuccessListener {
+            imgRef.downloadUrl.addOnSuccessListener { downloadUrl ->
+                val imageUrl = downloadUrl.toString()
                 Toast.makeText(this, "save ok..", Toast.LENGTH_SHORT).show()
-                Log.d("joj","save ok..")
-                //수동 종료
+                Log.d("joj", "Image URL: $imageUrl")
+                val retrofit = Retrofit.Builder()
+                    .baseUrl("http://10.100.103.71:8080/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build()
+
+                val rtitle = binding.rtitle.text
+                val rcity = binding.rcity.text
+                val rlat = binding.rlat.text
+                val rlng = binding.rlng.text
+                val rtel = binding.rtel.text
+                val rmainimg = imageUrl
+                val rinfo = binding.rinfo.text
+                Log.d("joj","저장되는 이미지경로${rmainimg}")
+
+                foodinfoService = retrofit.create(FoodInfoService::class.java)
+                val foodInfo = FoodInfo(null,rtitle.toString(), rcity.toString(), rlat.toString(), rlng.toString(),  rtel.toString(), rmainimg, rinfo.toString(),"0","0","0")
+                val call = foodinfoService.postFoodInfo(foodInfo)
+                call.enqueue(object : Callback<FoodInfo> {
+                    override fun onResponse(call: Call<FoodInfo>, response: Response<FoodInfo>) {
+                        if (response.isSuccessful) {
+                            // 서버로부터 응답이 성공적으로 돌아온 경우 처리할 내용
+                            // 예: Toast 메시지 표시 등
+                        } else {
+                            // 서버로부터 응답이 실패한 경우 처리할 내용
+                            // 예: 에러 메시지 표시 등
+                        }
+                    }
+
+                    override fun onFailure(call: Call<FoodInfo>, t: Throwable) {
+                        // 통신에 실패한 경우 처리할 내용
+                        // 예: 에러 메시지 표시 등
+                    }
+                })
+
                 finish()
             }
+        }
             .addOnFailureListener{
                 Log.d("joj", "file save error", it)
             }
 
+    }
+    fun getBitmapFromView(view: View): Bitmap? {
+        var bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
+        var canvas = Canvas(bitmap)
+        view.draw(canvas)
+        return  bitmap
     }
 }

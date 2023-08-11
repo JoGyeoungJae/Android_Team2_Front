@@ -23,4 +23,3 @@ fun signup(
  fun postComment(@Body comment: Comment): Call<Comment>
 
 }
-

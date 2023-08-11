@@ -146,7 +146,7 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
 
                 //Retrofit 인스턴스 생성
                 val retrofit = Retrofit.Builder()
-                    .baseUrl("http://10.100.103.15:8080") //백엔드 API 주소
+                    .baseUrl("http://10.100.103.71:8080/") //백엔드 API 주소
                     .addConverterFactory(GsonConverterFactory.create())
                     .build()
 
