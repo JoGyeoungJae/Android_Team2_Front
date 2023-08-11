@@ -1,5 +1,6 @@
 package com.example.frontend.service
 
+import com.example.frontend.dto.Comment
 import com.example.frontend.dto.User
 import retrofit2.Call
 import retrofit2.http.Body
@@ -18,4 +19,8 @@ interface ApiService {
 fun signup(
  @Body user: User
 ): Call<User>
+ @POST("comments")
+ fun postComment(@Body comment: Comment): Call<Comment>
+
 }
+
