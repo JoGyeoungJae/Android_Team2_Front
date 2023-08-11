@@ -17,7 +17,7 @@ import com.example.frontend.restaurant.AddRestaurantActivity
 
 
 class MainActivity : AppCompatActivity() {
-    lateinit var binding: ActivityMainBinding
+    lateinit var binding: ActivityMainBinding       ///1kjkjajskjdfkjsdkjf12121212
     lateinit var toggle: ActionBarDrawerToggle  // 메뉴11
 
 
