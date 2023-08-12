@@ -65,6 +65,22 @@ class LoginActivity : AppCompatActivity() {
                                     Log.d("lys","응답 o $user")
                                     // 로그인 성공 처리 (예: 화면 전환 등)
                                     Toast.makeText(this@LoginActivity, "로그인 성공!", Toast.LENGTH_SHORT).show()
+
+
+                                    //로그인버튼 누르면 받아온 데이터를 쉐어드 값에 업로드하고 인텐트메인화면
+                                    //
+                                    //쉐어드의 값에따라 여러가지가 뜨도록 수정.
+                                    //
+                                    //로그아웃하면 쉐어드 값 초기화하고 인텐트 메인화면
+                                    //
+                                    //회원정보 수정은 버튼 누르면 db에 값 바꾸도록하고, 쉐어드도 수정하고 인텐트
+                                    //
+                                    //회원탈퇴는 db에있는 값 삭제하고, 쉐어드도 초기화하고 인텐트
+                                    //
+                                    //crud 개발완료했으니, 로그인상태(쉐어드 업로드)에서 하는 행위들마다 쉐어드데이터쓸수있게끔 ex)댓글, 사진
+
+
+
                                 } else {
                                     val errorMessage = apiResponse.error
                                     Log.d("lys","응답 x $errorMessage")
