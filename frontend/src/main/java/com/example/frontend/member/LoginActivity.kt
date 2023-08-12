@@ -30,10 +30,10 @@ class LoginActivity : AppCompatActivity() {
             binding.loginButton.setOnClickListener {
                 val uemail = binding.loginEmail.text.toString()
                 val upassword = binding.loginPassword.text.toString()
-//                var uid = ""
-//                var uname = ""
-//                var unickname = ""
-//                var uimg = ""
+                var uid = ""
+                var uname = ""
+                var unickname = ""
+                var uimg = ""
 
                 if (uemail.isEmpty() || upassword.isEmpty()) {
                     // 어떤 입력값이 비어있으면 토스트 메시지 표시
@@ -51,46 +51,43 @@ class LoginActivity : AppCompatActivity() {
 
 
 //                    val login = Login(uemail, upassword, uid, uname, unickname, uimg)
-                    val login = Login(uemail, upassword)
+                    val login = Login(uemail, upassword, uid, uname, unickname, uimg)
                     val apiService = retrofit.create(ApiService::class.java)
 
                     val call = apiService.login(login)
-                    call.enqueue(object : Callback<ApiResponse<User>>{
-                        override fun onResponse(call: Call<ApiResponse<User>>, response: Response<ApiResponse<User>>) {
-                            if (response.isSuccessful) {
-                                // 성공적으로 응답을 받았을 때의 처리
-                                val responseBody = response.body()
-                                val user = responseBody?.data
-                                Log.d("lsy", "응답왔어. $user")
+                    call.enqueue(object : Callback<ApiResponse<Login>> {
+                        override fun onResponse(call: Call<ApiResponse<Login>>, response: Response<ApiResponse<Login>>) {
+                            val apiResponse = response.body()
 
-                            }else {
-                                    val errorBody = response.errorBody()?.string()
-
-                                    try{
-                                    val errorJson = JSONObject(errorBody)
-                                    val errorMessage = errorJson.getString("error")
-                                        Log.d("lsy","응답x. 에러메시지 : $errorMessage")
-
-                                    if(errorMessage.equals("No such email")){
+                            if (apiResponse != null) {
+                                if (apiResponse.success) {
+                                    val user = apiResponse.data
+                                    Log.d("lys","응답 o $user")
+                                    // 로그인 성공 처리 (예: 화면 전환 등)
+                                    Toast.makeText(this@LoginActivity, "로그인 성공!", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    val errorMessage = apiResponse.error
+                                    Log.d("lys","응답 x $errorMessage")
+                                    if (errorMessage == "No such email") {
                                         Toast.makeText(this@LoginActivity, "해당 이메일은 없습니다.", Toast.LENGTH_SHORT).show()
-                                    }
-                                    else if(errorMessage.equals("Incorrect password")){
+                                    } else if (errorMessage == "Incorrect password") {
                                         Toast.makeText(this@LoginActivity, "비밀번호가 틀렸습니다.", Toast.LENGTH_SHORT).show()
-                                    } else{
+                                    } else {
                                         Toast.makeText(this@LoginActivity, "이메일또는 비밀번호가 다르거나 없습니다.", Toast.LENGTH_SHORT).show()
                                     }
-                                } catch (e: JSONException){
-
                                 }
+                            } else {
+                                // 응답이 null인 경우에 대한 처리
+                                Log.d("lys","응답 null")
                             }
                         }
 
-                        override fun onFailure(call: Call<ApiResponse<User>>, t: Throwable) {
-
-                            Log.e("NetworkError", "Error occurred: ${t.message}")
-                            // 네트워크 오류 등의 실패 처리
+                        override fun onFailure(call: Call<ApiResponse<Login>>, t: Throwable) {
+                            // 네트워크 요청 실패에 대한 처리
+                            Log.d("lys","네트워크요청실패")
                         }
                     })
+
                 }
             }
 
