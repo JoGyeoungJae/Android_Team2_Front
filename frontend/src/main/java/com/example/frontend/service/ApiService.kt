@@ -19,7 +19,7 @@ interface ApiService {
 @POST("signup") // Spring Boot 서버의 API 엔드포인트 경로로 변경
 fun signup(
  @Body user: User
-): Call<User>
+): Call<String>
 
 
 @POST("login")

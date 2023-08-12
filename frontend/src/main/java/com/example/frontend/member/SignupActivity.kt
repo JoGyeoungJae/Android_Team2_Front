@@ -15,17 +15,15 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
-import androidx.core.graphics.drawable.toBitmap
 import com.example.frontend.R
 import com.example.frontend.service.ApiService
 import com.example.frontend.dto.User
 import com.example.frontend.databinding.ActivitySignupBinding
 import com.example.frontend.main.MainActivity
-import com.google.firebase.FirebaseApp
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.StorageMetadata
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
+import com.google.gson.GsonBuilder
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -35,7 +33,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileInputStream
-import java.io.InputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -197,103 +194,121 @@ class SignupActivity : AppCompatActivity() {
 
                 var uploadTask = imgRef.putBytes(data)
                 uploadTask.addOnSuccessListener {_ ->
-                    Log.d("lsy", "이미지 업로드 성공")
+                    Log.d("lys", "이미지 업로드 성공")
                     // 이미지 업로드 후 다운로드 URL 가져오기
                     imgRef.downloadUrl.addOnSuccessListener { uri ->
                         val downloadUrl = uri.toString()
-                        Log.d("lsy", "Download URL: $downloadUrl")
+                        Log.d("lys", "Download URL: $downloadUrl")
                         val uimg = downloadUrl
 
                         // TODO: 필요한 대로 downloadUrl을 사용합니다.
                         //서버로 값 전송
                         val retrofit = Retrofit.Builder()
                             .baseUrl("http://10.100.103.16:8080/") // Spring Boot 서버의 URL로 변경
-                            .addConverterFactory(GsonConverterFactory.create())
+                            .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
                             .build()
 
                         val user = User(uemail, upassword, uname, unickname, uimg)
                         val apiService = retrofit.create(ApiService::class.java)
 
                         val call = apiService.signup(user)
-                        call.enqueue(object : Callback<User> {
-                            override fun onResponse(call: Call<User>, response: Response<User>) {
+                        call.enqueue(object : Callback<String> {
+                            override fun onResponse(call: Call<String>, response: Response<String>) {
                                 if (response.isSuccessful) {
                                     // 성공적으로 응답을 받았을 때의 처리
-                                    Log.d("lsy", "응답 왔어.")
+                                    Log.d("lys", "갤러리부분")
+                                    val check = response.body()
+                                    // 성공적으로 응답을 받았을 때의 처리. 입력한 값을 db에 저장하고 나서 ok! 를 리턴함
+                                    Log.d("lys", "응답 o, $check")
+
+                                    //ok! 가 리턴되었다는건 정상적으로 저장이 되었다는 뜻이니까
+                                    if(check.equals("ok!")){
+                                        //정상적으로 동작하면 다른 화면으로 이동하게끔
+                                        Toast.makeText(this@SignupActivity,"회원가입 완료!", Toast.LENGTH_SHORT).show()
+                                        val intent = Intent(this@SignupActivity, MainActivity::class.java)
+                                        startActivity(intent)
+                                    }
 
                                 } else {
                                     // 서버로부터 에러 응답을 받았을 때 처리
+                                    Log.d("lys", "응답x")
                                 }
                             }
 
-                            override fun onFailure(call: Call<User>, t: Throwable) {
-                                Log.e("NetworkError", "Error occurred: ${t.message}")
+                            override fun onFailure(call: Call<String>, t: Throwable) {
+                                Log.d("lys", "Error occurred: ${t.message}")
                                 // 네트워크 오류 등의 실패 처리
                             }
                         })
 
 
                     }.addOnFailureListener { exception ->
-                        Log.e("lsy", "다운로드 URL 가져오기 실패: ${exception.message}")
+                        Log.e("lys", "다운로드 URL 가져오기 실패: ${exception.message}")
                     }
                 }.addOnFailureListener {
-                    Log.e("lsy", "이미지 업로드 실패: ${it.message}")
+                    Log.e("lys", "이미지 업로드 실패: ${it.message}")
                     // TODO: 이미지 업로드 실패 시에 할 작업 추가
                 }
             } else if (checkImg.equals("n")) {
                 val storageRef: StorageReference = storage.reference
                 val imgRef: StorageReference = storageRef.child("profile_images/$uemail.jpg")
-
                 val stream = FileInputStream(File(filePath))
-
-                Log.d("lsy", storageRef.toString())
-                Log.d("lsy", imgRef.toString())
-                Log.d("lsy", filePath)
-                Log.d("lsy", stream.toString())
-
                 val uploadTask = imgRef.putStream(stream)
+
                 uploadTask.addOnSuccessListener {_ ->
-                    Log.d("lsy", "이미지 업로드 성공")
+                    Log.d("lys", "이미지 업로드 성공")
                     // 이미지 업로드 후 다운로드 URL 가져오기
                     imgRef.downloadUrl.addOnSuccessListener { uri ->
                         val downloadUrl = uri.toString()
-                        Log.d("lsy", "Download URL: $downloadUrl")
+                        Log.d("lys", "Download URL: $downloadUrl")
                         val uimg = downloadUrl
 
                         // TODO: 필요한 대로 downloadUrl을 사용합니다.
                         //서버로 값 전송
                         val retrofit = Retrofit.Builder()
                             .baseUrl("http://10.100.103.16:8080/") // Spring Boot 서버의 URL로 변경
-                            .addConverterFactory(GsonConverterFactory.create())
+                            .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
                             .build()
 
                         val user = User(uemail, upassword, uname, unickname, uimg)
                         val apiService = retrofit.create(ApiService::class.java)
 
                         val call = apiService.signup(user)
-                        call.enqueue(object : Callback<User> {
-                            override fun onResponse(call: Call<User>, response: Response<User>) {
+                        call.enqueue(object : Callback<String> {
+                            override fun onResponse(call: Call<String>, response: Response<String>) {
                                 if (response.isSuccessful) {
                                     // 성공적으로 응답을 받았을 때의 처리
-                                    Log.d("lsy", "응답 왔어.")
+                                    Log.d("lys", "카메라부분")
+                                    val check = response.body()
+                                    // 성공적으로 응답을 받았을 때의 처리. 입력한 값을 db에 저장하고 나서 ok! 를 리턴함
+                                    Log.d("lys", "응답 o, $check")
+
+                                    //ok! 가 리턴되었다는건 정상적으로 저장이 되었다는 뜻이니까
+                                    if(check.equals("ok!")){
+                                        //정상적으로 동작하면 다른 화면으로 이동하게끔
+                                        Toast.makeText(this@SignupActivity,"회원가입 완료!", Toast.LENGTH_SHORT).show()
+                                        val intent = Intent(this@SignupActivity, MainActivity::class.java)
+                                        startActivity(intent)
+                                    }
 
                                 } else {
                                     // 서버로부터 에러 응답을 받았을 때의 처리
+                                    Log.d("lys", "응답x")
                                 }
                             }
 
-                            override fun onFailure(call: Call<User>, t: Throwable) {
-                                Log.e("NetworkError", "Error occurred: ${t.message}")
+                            override fun onFailure(call: Call<String>, t: Throwable) {
+                                Log.d("lys", "Error occurred: ${t.message}")
                                 // 네트워크 오류 등의 실패 처리
                             }
                         })
 
 
                     }.addOnFailureListener { exception ->
-                        Log.e("lsy", "다운로드 URL 가져오기 실패: ${exception.message}")
+                        Log.e("lys", "다운로드 URL 가져오기 실패: ${exception.message}")
                     }
                 }.addOnFailureListener {
-                    Log.e("lsy", "이미지 업로드 실패: ${it.message}")
+                    Log.e("lys", "이미지 업로드 실패: ${it.message}")
                     // TODO: 이미지 업로드 실패 시에 할 작업 추가
                 }
             } else if (checkImg.equals("none")) {
@@ -313,18 +328,18 @@ class SignupActivity : AppCompatActivity() {
                 // 이미지 업로드
                 val uploadTask = imgRef.putBytes(byteArray)
                 uploadTask.addOnSuccessListener {_ ->
-                    Log.d("lsy", "이미지 업로드 성공")
+                    Log.d("lys", "이미지 업로드 성공")
                     // 이미지 업로드 후 다운로드 URL 가져오기
                     imgRef.downloadUrl.addOnSuccessListener { uri ->
                         val downloadUrl = uri.toString()
-                        Log.d("lsy", "Download URL: $downloadUrl")
+                        Log.d("lys", "Download URL: $downloadUrl")
                         val uimg = downloadUrl
 
                         // TODO: 필요한 대로 downloadUrl을 사용합니다.
                         //서버로 값 전송
                         val retrofit = Retrofit.Builder()
                             .baseUrl("http://10.100.103.16:8080/") // Spring Boot 서버의 URL로 변경
-                            .addConverterFactory(GsonConverterFactory.create())
+                            .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
                             .build()
 
                         val user = User(uemail, upassword, uname, unickname, uimg)
@@ -332,49 +347,48 @@ class SignupActivity : AppCompatActivity() {
 
                         val call = apiService.signup(user)
 
-                        Log.d("lsy", "1111")
 
-                        call.enqueue(object : Callback<User> {
-                            override fun onResponse(call: Call<User>, response: Response<User>) {
+                        call.enqueue(object : Callback<String> {
+                            override fun onResponse(call: Call<String>, response: Response<String>) {
                                 if (response.isSuccessful) {
-                                    // 성공적으로 응답을 받았을 때의 처리
-                                    Log.d("lsy", "응답 왔어.")
+                                    Log.d("lys", "기본이미지부분")
+                                    val check = response.body()
+                                    // 성공적으로 응답을 받았을 때의 처리. 입력한 값을 db에 저장하고 나서 ok! 를 리턴함
+                                    Log.d("lys", "응답 o, $check")
+
+                                    //ok! 가 리턴되었다는건 정상적으로 저장이 되었다는 뜻이니까
+                                    if(check.equals("ok!")){
+                                        //정상적으로 동작하면 다른 화면으로 이동하게끔
+                                        Toast.makeText(this@SignupActivity,"회원가입 완료!", Toast.LENGTH_SHORT).show()
+                                        val intent = Intent(this@SignupActivity, MainActivity::class.java)
+                                        startActivity(intent)
+                                    }
 
                                 } else {
                                     // 서버로부터 에러 응답을 받았을 때의 처리
+                                    Log.d("lys", "응답 x")
                                 }
                             }
 
-                            override fun onFailure(call: Call<User>, t: Throwable) {
-                                Log.e("NetworkError", "Error occurred: ${t.message}")
+                            override fun onFailure(call: Call<String>, t: Throwable) {
+                                Log.d("lys", "응답 x Error occurred: ${t.message}")
                                 // 네트워크 오류 등의 실패처리
                             }
                         })
 
 
                     }.addOnFailureListener { exception ->
-                        Log.e("lsy", "다운로드 URL 가져오기 실패: ${exception.message}")
+                        Log.e("lys", "다운로드 URL 가져오기 실패: ${exception.message}")
                     }
                 }.addOnFailureListener {
-                    Log.e("lsy", "이미지 업로드 실패: ${it.message}")
+                    Log.e("lys", "이미지 업로드 실패: ${it.message}")
                     // TODO: 이미지 업로드 실패 시에 할 작업 추가
                 }
             }
-            Log.d("lsy", "2222")
+
             //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 
 
-
-
-
-
-
-
-
-            //정상적으로 동작하면 다른 화면으로 이동하게끔
-            Toast.makeText(this, "회원가입 완료!", Toast.LENGTH_SHORT).show()
-            val intent = Intent(this@SignupActivity, MainActivity::class.java)
-            startActivity(intent)
 
         }
 
