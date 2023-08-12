@@ -10,6 +10,11 @@ data class Comment(
 //    val username: String,
 //    val content: String,
     @SerializedName("cmtTime")
-    val timestamp: String
+    val timestamp: String,
+
+    @SerializedName("reviewimg")
+    val reviewimg: String,
+    @SerializedName("uid")
+    val uid: String
 
 )

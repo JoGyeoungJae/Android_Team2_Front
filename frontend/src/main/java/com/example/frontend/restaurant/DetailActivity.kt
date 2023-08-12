@@ -48,11 +48,12 @@ class DetailActivity : AppCompatActivity() {
                 // (예: 에러 메시지 표시 또는 별점 필수 입력)
             } else {
                 //댓글과 별점을 결합하여 저장
+                val uid="adimin"
                 val currentTime = System.currentTimeMillis()
                 val dataFormat = SimpleDateFormat("(yyyy-MM-dd, HH:mm)", Locale.getDefault())
                 formattedTime = dataFormat.format(Date(currentTime))
 
-                comments.add(CommentWithRating(cmt, rating, currentTime))
+                comments.add(CommentWithRating(cmt, rating, currentTime, uid))
 
                 //댓글 작성 후 달린 댓글 및 평균 별점 표시
                 updateCommentTextViewAndRating()
@@ -70,31 +71,31 @@ class DetailActivity : AppCompatActivity() {
 //                val formattedTime = dataFormat.format(Date(currentTime))
 
                 //Retrofit 인스턴스 생성
-                val retrofit = Retrofit.Builder()
-                    .baseUrl("http://10.100.103.15:8080") //백엔드 API 주소
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build()
-
-                val comment = Comment(cmt, formattedTime) //Comment 클래스는 댓글 데이터 모델을 나타냄
-                val apiService = retrofit.create(ApiService::class.java)
-
-                //댓글 등록 요청 보내기
-                val call = apiService.postComment(comment)
-                call.enqueue(object : Callback<Comment> {
-                    override fun onResponse(call: Call<Comment>, response: Response<Comment>) {
-                        //요청이 성공적으로 처리되었을 때 실행되는 코드
-                        //댓글 등록 후, 등록한 시간을 commentTimeTextView에 업데이트
-                        binding.commentTimeTextView.text = formattedTime
-
-                        //댓글 입력 필드 및 별점 초기화
-                        binding.commentInputEditText.text.clear()
-                        binding.ratingBar.rating = 0.0f
-                    }
-
-                    override fun onFailure(call: Call<Comment>, t: Throwable) {
-                        //요청이 실패했을 때 실행되는 코드
-                    }
-                })
+//                val retrofit = Retrofit.Builder()
+//                    .baseUrl("http://10.100.103.15:8080") //백엔드 API 주소
+//                    .addConverterFactory(GsonConverterFactory.create())
+//                    .build()
+//
+//                val comment = Comment(cmt, formattedTime) //Comment 클래스는 댓글 데이터 모델을 나타냄
+//                val apiService = retrofit.create(ApiService::class.java)
+//
+//                //댓글 등록 요청 보내기
+//                val call = apiService.postComment(comment)
+//                call.enqueue(object : Callback<Comment> {
+//                    override fun onResponse(call: Call<Comment>, response: Response<Comment>) {
+//                        //요청이 성공적으로 처리되었을 때 실행되는 코드
+//                        //댓글 등록 후, 등록한 시간을 commentTimeTextView에 업데이트
+//                        binding.commentTimeTextView.text = formattedTime
+//
+//                        //댓글 입력 필드 및 별점 초기화
+//                        binding.commentInputEditText.text.clear()
+//                        binding.ratingBar.rating = 0.0f
+//                    }
+//
+//                    override fun onFailure(call: Call<Comment>, t: Throwable) {
+//                        //요청이 실패했을 때 실행되는 코드
+//                    }
+//                })
 
 
 
