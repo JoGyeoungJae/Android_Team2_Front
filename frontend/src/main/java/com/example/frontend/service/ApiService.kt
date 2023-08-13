@@ -1,5 +1,8 @@
 package com.example.frontend.service
 
+import com.example.frontend.dto.ApiResponse
+import com.example.frontend.dto.Comment
+import com.example.frontend.dto.Login
 import com.example.frontend.dto.User
 import retrofit2.Call
 import retrofit2.http.Body
@@ -21,14 +24,8 @@ fun signup(
 
 
 @POST("login")
-fun login(
- @Body login: Login
-): Call<ApiResponse<Login>>
+fun login(@Body login: Login): Call<ApiResponse<Login>>
 
-
-
-}
-): Call<User>
  @POST("comments")
  fun postComment(@Body comment: Comment): Call<Comment>
 
