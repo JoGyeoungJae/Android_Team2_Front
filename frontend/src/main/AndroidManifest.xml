@@ -26,7 +26,7 @@
         <activity
             android:name=".member.ModifyActivity"
             android:exported="true" />
-        <activity
+
             android:name=".restaurant.RestModActivity"
             android:exported="false" />
         <activity
