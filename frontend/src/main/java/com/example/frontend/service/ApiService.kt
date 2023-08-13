@@ -1,6 +1,5 @@
 package com.example.frontend.service
 
-import com.example.frontend.dto.Comment
 import com.example.frontend.dto.User
 import retrofit2.Call
 import retrofit2.http.Body
@@ -18,6 +17,17 @@ interface ApiService {
 @POST("signup") // Spring Boot 서버의 API 엔드포인트 경로로 변경
 fun signup(
  @Body user: User
+): Call<String>
+
+
+@POST("login")
+fun login(
+ @Body login: Login
+): Call<ApiResponse<Login>>
+
+
+
+}
 ): Call<User>
  @POST("comments")
  fun postComment(@Body comment: Comment): Call<Comment>

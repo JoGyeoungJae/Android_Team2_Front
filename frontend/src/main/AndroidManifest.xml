@@ -21,6 +21,12 @@
         android:theme="@style/Theme.Frontend"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".member.DeleteActivity"
+            android:exported="true" />
+        <activity
+            android:name=".member.ModifyActivity"
+            android:exported="true" />
+
             android:name=".restaurant.RestModActivity"
             android:exported="false" />
         <activity
