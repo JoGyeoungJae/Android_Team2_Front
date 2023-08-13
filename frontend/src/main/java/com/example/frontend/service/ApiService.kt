@@ -27,8 +27,6 @@ fun signup(
 fun login(@Body login: Login): Call<ApiResponse<Login>>
 
 
-
-
 @POST("comments")
 fun postComment(@Body comment: Comment): Call<Comment>
 
