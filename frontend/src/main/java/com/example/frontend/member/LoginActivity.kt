@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import com.example.frontend.databinding.ActivityLoginBinding
+import com.example.frontend.db.DBConnect
 import com.example.frontend.dto.ApiResponse
 import com.example.frontend.dto.Login
 import com.example.frontend.main.MainActivity
@@ -41,13 +42,7 @@ class LoginActivity : AppCompatActivity() {
                 } else {
 
                     //서버로 값 전송
-                    val retrofit = Retrofit.Builder()
-                        .baseUrl("http://10.100.103.16:8080/") // Spring Boot 서버의 URL로 변경
-                        .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
-                        .build()
-
-
-
+                    val retrofit = DBConnect.retrofit
 
 
 //                    val login = Login(uemail, upassword, uid, uname, unickname, uimg)

@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        //====================토글 메뉴==========================
+        //====================토글 메뉴============================
         setSupportActionBar(binding.toolbar)
         toggle = ActionBarDrawerToggle(
             this,
