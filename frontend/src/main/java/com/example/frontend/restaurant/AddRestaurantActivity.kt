@@ -1,5 +1,6 @@
 package com.example.frontend.restaurant
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
@@ -36,10 +37,39 @@ class AddRestaurantActivity : AppCompatActivity() {
     lateinit var filePath: String
     private val storage = Firebase.storage
     lateinit var foodinfoService : FoodInfoService
+
+
+
+
+
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddRestaurantBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+
+        // SharedPreferences 객체생성=================저장된 값을 가져오기 위해=====================================
+        val sharedPreferences = getSharedPreferences("logged_user", Context.MODE_PRIVATE)
+        val uid = sharedPreferences.getString("uid", null)
+        val uemail = sharedPreferences.getString("uemail", null)
+        val upassword = sharedPreferences.getString("upassword", null)
+        val uname = sharedPreferences.getString("uname", null)
+        val unickname = sharedPreferences.getString("unickname", null)
+        val uimg = sharedPreferences.getString("uimg", null)
+
+
+        Log.d("lys","uid : $uid")
+        Log.d("lys","uemail : $uemail")
+        Log.d("lys","upassword : $upassword")
+        Log.d("lys","uname : $uname")
+        Log.d("lys","unickname : $unickname")
+        Log.d("lys","uimg : $uimg")
+
+
+
+
 
         binding.setimageBtn.setOnClickListener {
             /*Intent.ACTION_PICK -> 갤러리 사진 선택으로 이동*/

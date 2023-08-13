@@ -42,7 +42,7 @@ class LoginActivity : AppCompatActivity() {
 
                     //서버로 값 전송
                     val retrofit = Retrofit.Builder()
-                        .baseUrl("http://61.83.73.81:8080/") // Spring Boot 서버의 URL로 변경
+                        .baseUrl("http://10.100.103.16:8080/") // Spring Boot 서버의 URL로 변경
                         .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
                         .build()
 
