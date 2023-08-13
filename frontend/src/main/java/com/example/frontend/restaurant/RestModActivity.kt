@@ -3,46 +3,91 @@ package com.example.frontend.restaurant
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.drawable.Drawable
 import android.net.Uri
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
+import android.text.Editable
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import com.example.frontend.databinding.ActivityAddRestaurantBinding
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
+import com.example.frontend.R
+import com.example.frontend.databinding.ActivityRestModBinding
 import com.example.frontend.db.DBConnect
 import com.example.frontend.dto.FoodInfo
 import com.example.frontend.main.MainActivity
-import com.example.frontend.main.MainTwoFragment
 import com.example.frontend.service.FoodInfoService
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.io.ByteArrayOutputStream
 import java.util.UUID
 
-class AddRestaurantActivity : AppCompatActivity() {
-    //SHA1: 2F:60:49:C4:A4:71:5B:60:ED:7E:42:24:76:7E:DE:D4:5C:2E:E0:87
-    lateinit var binding: ActivityAddRestaurantBinding
-
+class RestModActivity : AppCompatActivity() {
+    lateinit var binding : ActivityRestModBinding
     //파일 경로를 전역으로 설정해서 갤러리에서 사진을 선택후 해당 파일의 절대 경로를 저장하는 파일
     lateinit var filePath: String
     private val storage = Firebase.storage
     lateinit var foodinfoService: FoodInfoService
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityAddRestaurantBinding.inflate(layoutInflater)
+        binding = ActivityRestModBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val intent = intent
+
+        // 전달된 값 가져오기
+        val rid = intent.getStringExtra("rid")
+        val rtitle = intent.getStringExtra("rtitle")
+        val rcity = intent.getStringExtra("rcity")
+        val rlat = intent.getStringExtra("rlat")
+        val rlng = intent.getStringExtra("rlng")
+        val rtel = intent.getStringExtra("rtel")
+        val rinfo = intent.getStringExtra("rinfo")
+        val rmainimg = intent.getStringExtra("rmainimg")
+        val rtotalstar = intent.getStringExtra("rtotalstar")
+        val rstaravg = intent.getStringExtra("rstaravg")
+        val rcount = intent.getStringExtra("rcount")
+
+        binding.rid.text = rid
+        binding.rtitle.text = Editable.Factory.getInstance().newEditable(rtitle)
+        binding.rcity.text = Editable.Factory.getInstance().newEditable(rcity)
+        binding.rlat.text = Editable.Factory.getInstance().newEditable(rlat)
+        binding.rlng.text = Editable.Factory.getInstance().newEditable(rlng)
+        binding.rtel.text = Editable.Factory.getInstance().newEditable(rtel)
+        binding.rinfo.text = Editable.Factory.getInstance().newEditable(rinfo)
+        binding.rtotalstar.text = rtotalstar
+        binding.rstaravg.text = rstaravg
+        binding.rcount.text = rcount
+        Glide.with(this)
+            .asBitmap()
+            .load(rmainimg)
+            .into(object : CustomTarget<Bitmap>(200, 200) {
+                override fun onResourceReady(
+                    resource: Bitmap,
+                    transition: Transition<in Bitmap>?
+                ) {
+                    binding.addImageView.setImageBitmap(resource)
+                }
+
+                override fun onLoadCleared(placeholder: Drawable?) {
+                    TODO("Not yet implemented")
+                }
+            })
+
+
+        //갤러리 사진 불러오기 버튼
         binding.setimageBtn.setOnClickListener {
             /*Intent.ACTION_PICK -> 갤러리 사진 선택으로 이동*/
             val intent = Intent(Intent.ACTION_PICK)
@@ -56,19 +101,34 @@ class AddRestaurantActivity : AppCompatActivity() {
             * */
             requestLauncher.launch(intent)
         }
+        //수정 버튼
         binding.addSave.setOnClickListener {
             if (binding.addImageView.drawable !== null) {
                 //store 에 먼저 데이터를 저장후 document id 값으로 업로드 파일 이름 지정
                 Log.d("joj", "@@@@@@@@@@@@@")
+                val imageUrl = intent.getStringExtra("rmainimg").toString()
 
-                val uuid = UUID.randomUUID()
-                uploadImage(uuid.toString())
+                val storage = FirebaseStorage.getInstance()
+                val storageRef: StorageReference = storage.getReferenceFromUrl(imageUrl)
+                storageRef.delete()
+                    .addOnSuccessListener {
+                        Log.d("joj", "Image deleted successfully")
+                        val uuid = UUID.randomUUID()
+                        uploadImage(uuid.toString())
+                    }
+                    .addOnFailureListener {
+                        // 이미지 삭제 실패한 경우 처리할 내용
+                        // 예: 에러 메시지 표시 등
+                        Log.d("joj", "이미지 삭제 실패", it)
+                    }
+
             } else {
                 Toast.makeText(this, "데이터가 모두 입력되지 않았습니다.", Toast.LENGTH_SHORT).show()
             }
 
 
         }
+
 
     }
 
@@ -125,6 +185,7 @@ class AddRestaurantActivity : AppCompatActivity() {
                 Toast.makeText(this, "save ok..", Toast.LENGTH_SHORT).show()
                 Log.d("joj", "Image URL: $imageUrl")
                 val retrofit = DBConnect.retrofit
+                val rid = binding.rid.text
                 val rtitle = binding.rtitle.text
                 val rcity = binding.rcity.text
                 val rlat = binding.rlat.text
@@ -132,10 +193,13 @@ class AddRestaurantActivity : AppCompatActivity() {
                 val rtel = binding.rtel.text
                 val rmainimg = imageUrl
                 val rinfo = binding.rinfo.text
+                val rtotalstar = binding.rtotalstar.text
+                val rstaravg = binding.rstaravg.text
+                val rcount = binding.rcount.text
                 Log.d("joj", "저장되는 이미지경로${rmainimg}")
                 foodinfoService = retrofit.create(FoodInfoService::class.java)
                 val foodInfo = FoodInfo(
-                    null,
+                    rid.toString(),
                     rtitle.toString(),
                     rcity.toString(),
                     rlat.toString(),
@@ -143,10 +207,11 @@ class AddRestaurantActivity : AppCompatActivity() {
                     rtel.toString(),
                     rmainimg,
                     rinfo.toString(),
-                    "0",
-                    "0",
-                    "0"
+                    rtotalstar.toString(),
+                    rstaravg.toString(),
+                    rcount.toString()
                 )
+                Log.d("joj", foodInfo.rid.toString())
                 Log.d("joj", foodInfo.rtitle.toString())
                 Log.d("joj", foodInfo.rcity.toString())
                 Log.d("joj", foodInfo.rlat.toString())
@@ -154,6 +219,9 @@ class AddRestaurantActivity : AppCompatActivity() {
                 Log.d("joj", foodInfo.rtel.toString())
                 Log.d("joj", foodInfo.rmainimg.toString())
                 Log.d("joj", foodInfo.rinfo.toString())
+                Log.d("joj", foodInfo.rtotalstar.toString())
+                Log.d("joj", foodInfo.rstaravg.toString())
+                Log.d("joj", foodInfo.rcount.toString())
                 val call = foodinfoService.postFoodInfo(foodInfo)
                 call.enqueue(object : Callback<FoodInfo> {
                     override fun onResponse(call: Call<FoodInfo>, response: Response<FoodInfo>) {
