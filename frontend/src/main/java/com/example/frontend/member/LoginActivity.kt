@@ -7,7 +7,8 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import com.example.frontend.databinding.ActivityLoginBinding
-import com.example.frontend.db.DBConnect
+
+import com.example.frontend.db.DBConnect2
 import com.example.frontend.dto.ApiResponse
 import com.example.frontend.dto.Login
 import com.example.frontend.main.MainActivity
@@ -41,8 +42,12 @@ class LoginActivity : AppCompatActivity() {
                     Toast.makeText(this, "모든 값을 입력하세요.", Toast.LENGTH_SHORT).show()
                 } else {
 
-                    //서버로 값 전송
-                    val retrofit = DBConnect.retrofit
+
+
+
+                    val retrofit = DBConnect2.retrofit
+
+
 
 
 //                    val login = Login(uemail, upassword, uid, uname, unickname, uimg)
