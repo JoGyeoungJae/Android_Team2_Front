@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import com.example.frontend.databinding.ActivityLoginBinding
+
 import com.example.frontend.db.DBConnect2
 import com.example.frontend.dto.ApiResponse
 import com.example.frontend.dto.Login
@@ -43,7 +44,9 @@ class LoginActivity : AppCompatActivity() {
 
 
 
+
                     val retrofit = DBConnect2.retrofit
+
 
 
 

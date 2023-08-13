@@ -17,7 +17,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="식당 등록"
+                android:text="식당 수정"
                 android:textSize="30dp"
                 android:layout_gravity="center_horizontal|center_vertical"
                 android:layout_marginBottom="30dp"
