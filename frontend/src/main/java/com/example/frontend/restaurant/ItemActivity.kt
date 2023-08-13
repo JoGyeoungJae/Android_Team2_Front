@@ -10,7 +10,9 @@ import android.view.MenuItem
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat.getSystemService
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
@@ -19,9 +21,12 @@ import com.example.frontend.databinding.ActivityItemBinding
 import com.example.frontend.db.DBConnect
 import com.example.frontend.dto.Comment
 import com.example.frontend.dto.CommentWithRating
+import com.example.frontend.dto.FoodInfo
+import com.example.frontend.main.MainActivity
 import com.example.frontend.member.LoginActivity
 import com.example.frontend.member.SignupActivity
 import com.example.frontend.service.ApiService
+import com.example.frontend.service.FoodInfoService
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -29,6 +34,11 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.internal.ViewUtils.hideKeyboard
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
+import okhttp3.MediaType
+import okhttp3.RequestBody
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -37,6 +47,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.UUID
 
 
 class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -45,6 +56,7 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
     lateinit var binding: ActivityItemBinding
     private lateinit var formattedTime: String
     private val comments = mutableListOf<CommentWithRating>()
+    lateinit var foodinfoService: FoodInfoService
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,13 +93,13 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
         val intent = intent
 
         // 전달된 값 가져오기
-        val rid = intent.getLongExtra("rid",0L)
+        val rid = intent.getStringExtra("rid")
         val rtitle = intent.getStringExtra("rtitle")
         val rcity = intent.getStringExtra("rcity")
         val rtel = intent.getStringExtra("rtel")
         val rinfo = intent.getStringExtra("rinfo")
 
-        binding.rid.text = rid.toString()
+        binding.rid.text = rid
         binding.rtitle.text = rtitle
         binding.rcity.text = rcity
         binding.rtel.text = rtel
@@ -173,6 +185,83 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
 
             }
         }
+
+        //=============================수정 버튼==========================================\
+        binding.mod.setOnClickListener {
+            val modintent = Intent(this, RestModActivity::class.java)
+//            Log.d("jojj1", intent.getStringExtra("rid").toString())
+//            Log.d("jojj1", intent.getStringExtra("rtitle").toString())
+//            Log.d("jojj1", intent.getStringExtra("rcity").toString())
+//            Log.d("jojj1", intent.getStringExtra("rlat").toString())
+//            Log.d("jojj1", intent.getStringExtra("rlng").toString())
+//            Log.d("jojj1", intent.getStringExtra("rtel").toString())
+//            Log.d("jojj1", intent.getStringExtra("rinfo").toString())
+//            Log.d("jojj1", intent.getStringExtra("rmainimg").toString())
+//            Log.d("jojj1", intent.getStringExtra("rtotalstar").toString())
+//            Log.d("jojj1", intent.getStringExtra("rstaravg").toString())
+//            Log.d("jojj1", intent.getStringExtra("rcount").toString())
+            modintent.putExtra("rid",intent.getStringExtra("rid"))
+            modintent.putExtra("rtitle",intent.getStringExtra("rtitle"))
+            modintent.putExtra("rcity",intent.getStringExtra("rcity"))
+            modintent.putExtra("rlat",intent.getStringExtra("rlat"))
+            modintent.putExtra("rlng",intent.getStringExtra("rlng"))
+            modintent.putExtra("rtel",intent.getStringExtra("rtel"))
+            modintent.putExtra("rinfo",intent.getStringExtra("rinfo"))
+            modintent.putExtra("rmainimg",intent.getStringExtra("rmainimg"))
+            modintent.putExtra("rtotalstar",intent.getStringExtra("rtotalstar"))
+            modintent.putExtra("rstaravg",intent.getStringExtra("rstaravg"))
+            modintent.putExtra("rcount",intent.getStringExtra("rcount"))
+            startActivity(modintent)
+        }
+
+        //===================================삭제 버튼===============================
+        binding.del.setOnClickListener {
+                val imageUrl = intent.getStringExtra("rmainimg").toString()
+                Log.d("joj", "삭제-> 이미지 경로")
+                Log.d("joj", imageUrl)
+                val storage = FirebaseStorage.getInstance()
+                val storageRef: StorageReference = storage.getReferenceFromUrl(imageUrl)
+                storageRef.delete()
+                    .addOnSuccessListener {
+                        Log.d("joj", "삭제-> 이미지 삭제 성공")
+                    }
+                    .addOnFailureListener {
+                        // 이미지 삭제 실패한 경우 처리할 내용
+                        // 예: 에러 메시지 표시 등
+                        Log.d("joj", "이미지 삭제 실패", it)
+                    }
+                Log.d("joj","삭제 확인 버튼 클릭")
+                val retrofit = DBConnect.retrofit
+                val rid = intent.getStringExtra("rid").toString()
+                Log.d("joj",rid)
+                foodinfoService = retrofit.create(FoodInfoService::class.java)
+                val foodInfo = FoodInfo(
+                    rid,null,null,null,null,null,null,null,null,null,null
+                )
+                val call = foodinfoService.postFoodInfodelete(foodInfo)
+                call.enqueue(object : Callback<FoodInfo> {
+                    override fun onResponse(call: Call<FoodInfo>, response: Response<FoodInfo>) {
+                        if (response.isSuccessful) {
+                            val responseBody = response.body()
+                            val message = responseBody?.toString() // 메시지 받아오기
+                            Log.d("joj", "서버 응답 메시지: $message")
+
+                        } else {
+                            Log.d("joj","서버로부터 응답이 실패")
+                        }
+                        val refreshIntent = Intent(this@ItemActivity, MainActivity::class.java)
+                        startActivity(refreshIntent)
+                    }
+
+                    override fun onFailure(call: Call<FoodInfo>, t: Throwable) {
+                        // 통신에 실패한 경우 처리할 내용
+                        // 예: 에러 메시지 표시 등
+                        Log.d("joj","통신에 실패: ${t.message}")
+                    }
+                })
+            val refreshIntent = Intent(this@ItemActivity, MainActivity::class.java)
+            startActivity(refreshIntent)
+            }
     }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (toggle.onOptionsItemSelected(item)) {
@@ -182,8 +271,8 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
     }
     override fun onMapReady(googleMap: GoogleMap) {
         val intent = intent
-        val LAT = intent.getDoubleExtra("rlat",0.0) // String을 Double로 변환
-        val LNG = intent.getDoubleExtra("rlng",0.0)
+        val LAT = intent.getStringExtra("rlat")?.toDouble() // String을 Double로 변환
+        val LNG = intent.getStringExtra("rlng")?.toDouble()
 
         if (LAT != null && LNG != null) {
             Log.d("joj", LAT.toString())
@@ -193,7 +282,7 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
             // Add a marker at the specified location and move the camera
             val location = LatLng(LAT, LNG)
             mMap.addMarker(MarkerOptions().position(location).title("Marker"))
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 20f))
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15f))
         } else {
             Log.d("joj", "LAT or LNG is null.")
         }

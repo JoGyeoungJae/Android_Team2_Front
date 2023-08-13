@@ -13,4 +13,6 @@ interface FoodInfoService {
 
     @POST("/postFoodInfo")
     fun postFoodInfo(@Body foodInfo: FoodInfo): Call<FoodInfo>
+    @POST("/postFoodInfodelete")
+    fun postFoodInfodelete(@Body foodInfo: FoodInfo): Call<FoodInfo>
 }
