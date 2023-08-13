@@ -21,6 +21,12 @@
         android:theme="@style/Theme.Frontend"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".restaurant.AllListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".restaurant.SearchListActivity"
+            android:exported="false" />
+        <activity
             android:name=".member.DeleteActivity"
             android:exported="true" />
         <activity

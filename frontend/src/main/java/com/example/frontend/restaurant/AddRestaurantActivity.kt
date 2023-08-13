@@ -1,5 +1,6 @@
 package com.example.frontend.restaurant
 
+import android.R
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -9,6 +10,9 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -16,9 +20,10 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.frontend.databinding.ActivityAddRestaurantBinding
 import com.example.frontend.db.DBConnect
+import com.example.frontend.dto.City
 import com.example.frontend.dto.FoodInfo
 import com.example.frontend.main.MainActivity
-import com.example.frontend.main.MainTwoFragment
+import com.example.frontend.service.CityService
 import com.example.frontend.service.FoodInfoService
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
@@ -26,10 +31,9 @@ import com.google.firebase.storage.ktx.storage
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.io.ByteArrayOutputStream
 import java.util.UUID
+
 
 class AddRestaurantActivity : AppCompatActivity() {
     //SHA1: 2F:60:49:C4:A4:71:5B:60:ED:7E:42:24:76:7E:DE:D4:5C:2E:E0:87
@@ -39,12 +43,56 @@ class AddRestaurantActivity : AppCompatActivity() {
     lateinit var filePath: String
     private val storage = Firebase.storage
     lateinit var foodinfoService : FoodInfoService
-
+    lateinit var cityService : CityService
+    lateinit var cityid : String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddRestaurantBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val retrofit = DBConnect.retrofit
+
+        cityService = retrofit.create(CityService::class.java)
+
+        val call: Call<List<City?>?>? = cityService.getcityList()
+        call?.enqueue(object : Callback<List<City?>?> {
+            override fun onResponse(call: Call<List<City?>?>, response: Response<List<City?>?>) {
+                if (response.isSuccessful) {
+                    val cityList: List<City?>? = response.body()
+                    // 도시 이름 목록 추출
+                    val cityNames = cityList?.mapNotNull { it?.ccity } ?: emptyList()
+
+                    val spinner = binding.cityid
+
+                    // 어댑터 생성 및 데이터 설정
+                    val adapter = ArrayAdapter(this@AddRestaurantActivity, android.R.layout.simple_spinner_item, cityNames)
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+                    // 스피너에 어댑터 설정
+                    spinner.adapter = adapter
+                    // 처리할 작업: cityList를 활용하여 스피너에 표시 등
+                    spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                        override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                           Log.d("joj","select box 선택")
+                           Log.d("joj",(position+1).toString())
+                            cityid = (position+1).toString()
+                        }
+
+                        override fun onNothingSelected(parent: AdapterView<*>?) {
+                            // 아무것도 선택되지 않았을 때 처리
+                        }
+                    }
+                } else {
+                    // API 호출은 성공했지만 서버에서 오류 응답을 보낸 경우 처리
+                    val errorBody = response.errorBody()?.string()
+                    // 오류 응답 처리: errorBody를 활용하여 오류 메시지 등을 처리
+                }
+            }
+
+            override fun onFailure(call: Call<List<City?>?>, t: Throwable) {
+                // 네트워크 연결 실패 등 오류 처리
+            }
+        })
 
         // SharedPreferences 객체생성=================저장된 값을 가져오기 위해=====================================
         val sharedPreferences = getSharedPreferences("logged_user", Context.MODE_PRIVATE)
@@ -169,7 +217,8 @@ class AddRestaurantActivity : AppCompatActivity() {
                     rinfo.toString(),
                     "0",
                     "0",
-                    "0"
+                    "0",
+                    cityid
                 )
                 Log.d("joj", foodInfo.rtitle.toString())
                 Log.d("joj", foodInfo.rcity.toString())
@@ -178,6 +227,7 @@ class AddRestaurantActivity : AppCompatActivity() {
                 Log.d("joj", foodInfo.rtel.toString())
                 Log.d("joj", foodInfo.rmainimg.toString())
                 Log.d("joj", foodInfo.rinfo.toString())
+                Log.d("joj", foodInfo.cid.toString())
                 val call = foodinfoService.postFoodInfo(foodInfo)
                 call.enqueue(object : Callback<FoodInfo> {
                     override fun onResponse(call: Call<FoodInfo>, response: Response<FoodInfo>) {

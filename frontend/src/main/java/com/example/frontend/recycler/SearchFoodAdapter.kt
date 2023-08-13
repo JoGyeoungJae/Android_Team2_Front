@@ -12,25 +12,26 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.example.frontend.R
+import com.example.frontend.databinding.ActivitySearchListBinding
 import com.example.frontend.databinding.ItemMainBinding
 import com.example.frontend.dto.FoodInfo
 import com.example.frontend.restaurant.ItemActivity
 
 
 //부산맛집
-class MyViewHolder2(val binding: ItemMainBinding): RecyclerView.ViewHolder(binding.root)
+class SearchMyViewHolder2(val binding: ItemMainBinding): RecyclerView.ViewHolder(binding.root)
 
-class MyAdapter2(val context: Context, val datas: List<FoodInfo?>?): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+class SearchMyAdapter2(val context: Context, val datas: List<FoodInfo?>?): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     override fun getItemCount(): Int{
         return datas?.size ?: 0
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder
-            = MyViewHolder2(ItemMainBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+            = SearchMyViewHolder2(ItemMainBinding.inflate(LayoutInflater.from(parent.context), parent, false))
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val binding=(holder as MyViewHolder2).binding
+        val binding=(holder as SearchMyViewHolder2).binding
 
         //도보 여행
         val food = datas?.get(position)
