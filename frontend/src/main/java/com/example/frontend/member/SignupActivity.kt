@@ -204,7 +204,7 @@ class SignupActivity : AppCompatActivity() {
                         // TODO: 필요한 대로 downloadUrl을 사용합니다.
                         //서버로 값 전송
                         val retrofit = Retrofit.Builder()
-                            .baseUrl("http://10.100.103.16:8080/") // Spring Boot 서버의 URL로 변경
+                            .baseUrl("http://61.83.73.81:8080/") // Spring Boot 서버의 URL로 변경
                             .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
                             .build()
 
@@ -266,7 +266,7 @@ class SignupActivity : AppCompatActivity() {
                         // TODO: 필요한 대로 downloadUrl을 사용합니다.
                         //서버로 값 전송
                         val retrofit = Retrofit.Builder()
-                            .baseUrl("http://10.100.103.16:8080/") // Spring Boot 서버의 URL로 변경
+                            .baseUrl("http://61.83.73.81:8080/") // Spring Boot 서버의 URL로 변경
                             .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
                             .build()
 
@@ -338,7 +338,7 @@ class SignupActivity : AppCompatActivity() {
                         // TODO: 필요한 대로 downloadUrl을 사용합니다.
                         //서버로 값 전송
                         val retrofit = Retrofit.Builder()
-                            .baseUrl("http://10.100.103.16:8080/") // Spring Boot 서버의 URL로 변경
+                            .baseUrl("http://61.83.73.81:8080/") // Spring Boot 서버의 URL로 변경
                             .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
                             .build()
 

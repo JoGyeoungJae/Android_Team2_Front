@@ -1,5 +1,7 @@
 package com.example.frontend.member
 
+import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -7,11 +9,9 @@ import android.widget.Toast
 import com.example.frontend.databinding.ActivityLoginBinding
 import com.example.frontend.dto.ApiResponse
 import com.example.frontend.dto.Login
-import com.example.frontend.dto.User
+import com.example.frontend.main.MainActivity
 import com.example.frontend.service.ApiService
 import com.google.gson.GsonBuilder
-import org.json.JSONException
-import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -42,7 +42,7 @@ class LoginActivity : AppCompatActivity() {
 
                     //서버로 값 전송
                     val retrofit = Retrofit.Builder()
-                        .baseUrl("http://10.100.103.16:8080/") // Spring Boot 서버의 URL로 변경
+                        .baseUrl("http://61.83.73.81:8080/") // Spring Boot 서버의 URL로 변경
                         .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
                         .build()
 
@@ -62,23 +62,52 @@ class LoginActivity : AppCompatActivity() {
                             if (apiResponse != null) {
                                 if (apiResponse.success) {
                                     val user = apiResponse.data
+
+                                    //데이터 응답확인
                                     Log.d("lys","응답 o $user")
-                                    // 로그인 성공 처리 (예: 화면 전환 등)
-                                    Toast.makeText(this@LoginActivity, "로그인 성공!", Toast.LENGTH_SHORT).show()
 
+                                    // 쉐어드 프리퍼런스 객체 생성(this말고 앱전체에서공유하는 applicationContext)
+                                    val sharedPreferences = applicationContext.getSharedPreferences("logged_user", Context.MODE_PRIVATE)
 
-                                    //로그인버튼 누르면 받아온 데이터를 쉐어드 값에 업로드하고 인텐트메인화면
-                                    //
-                                    //쉐어드의 값에따라 여러가지가 뜨도록 수정.
-                                    //
-                                    //로그아웃하면 쉐어드 값 초기화하고 인텐트 메인화면
-                                    //
-                                    //회원정보 수정은 버튼 누르면 db에 값 바꾸도록하고, 쉐어드도 수정하고 인텐트
-                                    //
-                                    //회원탈퇴는 db에있는 값 삭제하고, 쉐어드도 초기화하고 인텐트
-                                    //
-                                    //crud 개발완료했으니, 로그인상태(쉐어드 업로드)에서 하는 행위들마다 쉐어드데이터쓸수있게끔 ex)댓글, 사진
+                                    // 값을 저장하기 위한  객체 생성. 이 객체는 내부적인 특성에 의해 val로 선언해도 작동함. 그러나 값을 수정하는 객체이므로 var이 의미상 더 적절
+                                    var logged = sharedPreferences.edit()
 
+                                    //불러온 데이터를 객체에 저장
+                                    logged.putString("uid",user.uid)
+                                    logged.putString("uemail",user.uemail)
+                                    logged.putString("upassword",user.upassword)
+                                    logged.putString("uname",user.uname)
+                                    logged.putString("unickname",user.unickname)
+                                    logged.putString("uimg",user.uimg)
+
+                                    // 변경 사항을 커밋하여 저장
+                                    logged.apply()
+
+                                    // 저장된 값을 로그로 확인. 해당 저장값이 없을때는, 로그에 null이 뜨도록 설정
+                                    Log.d("lys", "uid: ${sharedPreferences.getString("uid", null)}")
+                                    Log.d("lys", "uemail: ${sharedPreferences.getString("uemail", null)}")
+                                    Log.d("lys", "upassword: ${sharedPreferences.getString("upassword", null)}")
+                                    Log.d("lys", "uname: ${sharedPreferences.getString("uname", null)}")
+                                    Log.d("lys", "unickname: ${sharedPreferences.getString("unickname", null)}")
+                                    Log.d("lys", "uimg: ${sharedPreferences.getString("uimg", null)}")
+
+                                    //현재 쉐어드에 저장된 모든 데이터 확인방법
+//                                    val allEntries: Map<String, *> = sharedPreferences.all
+//                                    for ((key, value) in allEntries) {
+//                                        Log.d("lys", "$key: $value")
+//                                    }
+
+                                    if(sharedPreferences.getString("uid",null)!=null &&
+                                       sharedPreferences.getString("uemail",null)!=null &&
+                                       sharedPreferences.getString("upassword",null)!=null &&
+                                       sharedPreferences.getString("uname",null)!=null &&
+                                       sharedPreferences.getString("unickname",null)!=null &&
+                                       sharedPreferences.getString("uimg",null)!=null
+                                    ){
+                                        Toast.makeText(this@LoginActivity,"로그인 완료", Toast.LENGTH_SHORT).show()
+                                        val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                                        startActivity(intent)
+                                    }
 
 
                                 } else {
