@@ -52,12 +52,12 @@ class MainActivity : AppCompatActivity() {
         val uimg = sharedPreferences.getString("uimg", null)
 
 
-        Log.d("lys","uid : $uid")
-        Log.d("lys","uemail : $uemail")
-        Log.d("lys","upassword : $upassword")
-        Log.d("lys","uname : $uname")
-        Log.d("lys","unickname : $unickname")
-        Log.d("lys","uimg : $uimg")
+//        Log.d("lys","uid : $uid")
+//        Log.d("lys","uemail : $uemail")
+//        Log.d("lys","upassword : $upassword")
+//        Log.d("lys","uname : $uname")
+//        Log.d("lys","unickname : $unickname")
+//        Log.d("lys","uimg : $uimg")
 
 
 

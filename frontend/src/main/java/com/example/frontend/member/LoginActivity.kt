@@ -81,12 +81,12 @@ class LoginActivity : AppCompatActivity() {
                                     logged.apply()
 
                                     // 저장된 값을 로그로 확인. 해당 저장값이 없을때는, 로그에 null이 뜨도록 설정
-                                    Log.d("lys", "uid: ${sharedPreferences.getString("uid", null)}")
-                                    Log.d("lys", "uemail: ${sharedPreferences.getString("uemail", null)}")
-                                    Log.d("lys", "upassword: ${sharedPreferences.getString("upassword", null)}")
-                                    Log.d("lys", "uname: ${sharedPreferences.getString("uname", null)}")
-                                    Log.d("lys", "unickname: ${sharedPreferences.getString("unickname", null)}")
-                                    Log.d("lys", "uimg: ${sharedPreferences.getString("uimg", null)}")
+//                                    Log.d("lys", "uid: ${sharedPreferences.getString("uid", null)}")
+//                                    Log.d("lys", "uemail: ${sharedPreferences.getString("uemail", null)}")
+//                                    Log.d("lys", "upassword: ${sharedPreferences.getString("upassword", null)}")
+//                                    Log.d("lys", "uname: ${sharedPreferences.getString("uname", null)}")
+//                                    Log.d("lys", "unickname: ${sharedPreferences.getString("unickname", null)}")
+//                                    Log.d("lys", "uimg: ${sharedPreferences.getString("uimg", null)}")
 
                                     //현재 쉐어드에 저장된 모든 데이터 확인방법
 //                                    val allEntries: Map<String, *> = sharedPreferences.all
