@@ -1,7 +1,5 @@
 package com.example.frontend.service
 
-import com.example.frontend.dto.ApiResponse
-import com.example.frontend.dto.Login
 import com.example.frontend.dto.User
 import retrofit2.Call
 import retrofit2.http.Body
@@ -28,5 +26,10 @@ fun login(
 ): Call<ApiResponse<Login>>
 
 
+
+}
+): Call<User>
+ @POST("comments")
+ fun postComment(@Body comment: Comment): Call<Comment>
 
 }

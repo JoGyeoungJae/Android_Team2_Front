@@ -26,6 +26,9 @@
         <activity
             android:name=".member.ModifyActivity"
             android:exported="true" />
+
+            android:name=".restaurant.RestModActivity"
+            android:exported="false" />
         <activity
             android:name=".main.MainActivity"
             android:exported="true" />
@@ -42,7 +45,7 @@
             android:exported="false" />
         <activity
             android:name=".restaurant.ItemActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".IntroActivity"
             android:exported="true">
