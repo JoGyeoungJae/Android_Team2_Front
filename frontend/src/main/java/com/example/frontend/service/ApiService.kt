@@ -27,6 +27,11 @@ fun signup(
   @Body user: User
  ): Call<String>
 
+ @POST("delete") // Spring Boot 서버의 API 엔드포인트 경로로 변경
+ fun delete(
+  @Body user: User
+ ): Call<String>
+
 
 @POST("login")
 fun login(@Body login: Login): Call<ApiResponse<Login>>
