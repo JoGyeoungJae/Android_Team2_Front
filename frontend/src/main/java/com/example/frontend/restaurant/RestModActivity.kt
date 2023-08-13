@@ -11,6 +11,8 @@ import android.provider.MediaStore
 import android.text.Editable
 import android.util.Log
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import com.bumptech.glide.Glide
@@ -20,8 +22,10 @@ import com.bumptech.glide.request.transition.Transition
 import com.example.frontend.R
 import com.example.frontend.databinding.ActivityRestModBinding
 import com.example.frontend.db.DBConnect
+import com.example.frontend.dto.City
 import com.example.frontend.dto.FoodInfo
 import com.example.frontend.main.MainActivity
+import com.example.frontend.service.CityService
 import com.example.frontend.service.FoodInfoService
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
@@ -39,12 +43,55 @@ class RestModActivity : AppCompatActivity() {
     lateinit var filePath: String
     private val storage = Firebase.storage
     lateinit var foodinfoService: FoodInfoService
-
+    lateinit var cityService : CityService
+    lateinit var cityid : String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityRestModBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val retrofit = DBConnect.retrofit
 
+        cityService = retrofit.create(CityService::class.java)
+
+        val call: Call<List<City?>?>? = cityService.getcityList()
+        call?.enqueue(object : Callback<List<City?>?> {
+            override fun onResponse(call: Call<List<City?>?>, response: Response<List<City?>?>) {
+                if (response.isSuccessful) {
+                    val cityList: List<City?>? = response.body()
+                    // 도시 이름 목록 추출
+                    val cityNames = cityList?.mapNotNull { it?.ccity } ?: emptyList()
+
+                    val spinner = binding.cityid
+
+                    // 어댑터 생성 및 데이터 설정
+                    val adapter = ArrayAdapter(this@RestModActivity, android.R.layout.simple_spinner_item, cityNames)
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+                    // 스피너에 어댑터 설정
+                    spinner.adapter = adapter
+                    // 처리할 작업: cityList를 활용하여 스피너에 표시 등
+                    spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                        override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                            Log.d("joj","select box 선택")
+                            Log.d("joj",(position+1).toString())
+                            cityid = (position+1).toString()
+                        }
+
+                        override fun onNothingSelected(parent: AdapterView<*>?) {
+                            // 아무것도 선택되지 않았을 때 처리
+                        }
+                    }
+                } else {
+                    // API 호출은 성공했지만 서버에서 오류 응답을 보낸 경우 처리
+                    val errorBody = response.errorBody()?.string()
+                    // 오류 응답 처리: errorBody를 활용하여 오류 메시지 등을 처리
+                }
+            }
+
+            override fun onFailure(call: Call<List<City?>?>, t: Throwable) {
+                // 네트워크 연결 실패 등 오류 처리
+            }
+        })
         val intent = intent
 
         // 전달된 값 가져오기
@@ -209,7 +256,8 @@ class RestModActivity : AppCompatActivity() {
                     rinfo.toString(),
                     rtotalstar.toString(),
                     rstaravg.toString(),
-                    rcount.toString()
+                    rcount.toString(),
+                    cityid
                 )
                 Log.d("joj", foodInfo.rid.toString())
                 Log.d("joj", foodInfo.rtitle.toString())
@@ -222,6 +270,7 @@ class RestModActivity : AppCompatActivity() {
                 Log.d("joj", foodInfo.rtotalstar.toString())
                 Log.d("joj", foodInfo.rstaravg.toString())
                 Log.d("joj", foodInfo.rcount.toString())
+                Log.d("joj", foodInfo.cid.toString())
                 val call = foodinfoService.postFoodInfo(foodInfo)
                 call.enqueue(object : Callback<FoodInfo> {
                     override fun onResponse(call: Call<FoodInfo>, response: Response<FoodInfo>) {

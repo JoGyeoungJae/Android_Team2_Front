@@ -24,4 +24,6 @@ data class FoodInfo(
     val rstaravg: String?,
     @SerializedName("rcount")
     val rcount: String?,
+    @SerializedName("cid")
+    val cid: String?,
 )

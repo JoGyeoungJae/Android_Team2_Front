@@ -7,6 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -14,112 +15,137 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/colorPrimary"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                >
-
-                <androidx.appcompat.widget.Toolbar
-                    android:id="@+id/toolbar"
+                android:padding="15dp">
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?attr/colorPrimary"/>
+                    android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/bigtitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="30dp"/>
+                    <ImageView
+                        android:id="@+id/starimg"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"/>
+                </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:layout_gravity="center_horizontal">
                     <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="순번"
-                        android:textSize="20sp"
-                        android:layout_marginTop="20dp" />
-                    <Button
-                        android:id="@+id/mod"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:text="수정"
-                        android:layout_gravity="center_horizontal|center_vertical"/>
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="순번"
+                    android:textSize="20sp"
+                    android:layout_marginTop="20dp"
+                        android:visibility="gone"
+                    />
+                        <Button
+                            android:id="@+id/mod"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:text="수정"
+                            android:layout_gravity="center_horizontal|center_vertical"/>
 
-                    <Button
-                        android:id="@+id/del"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:text="삭제" />
+                        <Button
+                            android:id="@+id/del"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:text="삭제" />
                 </LinearLayout>
-
-                <TextView
-                    android:id="@+id/rid"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="20sp" />
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="식당명"
-                    android:textSize="20sp"
-                    android:layout_marginTop="20dp"/>
-                <TextView
-                    android:id="@+id/rtitle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="20sp" />
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="주소"
-                    android:textSize="20sp"
-                    android:layout_marginTop="20dp"/>
-                <TextView
-                    android:id="@+id/rcity"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="20sp"/>
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="전화번호"
-                    android:textSize="20sp"
-                    android:layout_marginTop="20dp"/>
-                <TextView
-                    android:id="@+id/rtel"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="20sp" />
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="상세 설명"
-                    android:textSize="20sp"
-                    android:layout_marginTop="20dp"/>
-                <TextView
-                    android:id="@+id/rinfo"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="20sp"/>
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="구글맵"
-                    android:textSize="20sp"
-                    android:layout_marginTop="20dp"/>
                 <fragment
                     android:id="@+id/map"
                     android:name="com.google.android.gms.maps.SupportMapFragment"
                     android:layout_width="match_parent"
                     android:layout_height="300dp" />
                 <TextView
+                    android:id="@+id/rid"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="대표이미지"
                     android:textSize="20sp"
-                    android:layout_marginTop="20dp"/>
-                <ImageView
-                    android:id="@+id/imgpath"
+                    android:visibility="gone"/>
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center_horizontal|center_vertical"/>
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="5dp"
+                    android:background="#E4E5E6">
+                    <ImageView
+                        android:id="@+id/imgpath"
+                        android:layout_width="160dp"
+                        android:layout_height="120dp"
+                        android:layout_gravity="center_horizontal|center_vertical"
+                        android:src="@drawable/noimg"/>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="5dp">
+                        <TextView
+                            android:id="@+id/rtitle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="20sp" />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="주소"
+                            android:textSize="20sp"
+                            android:layout_marginTop="20dp"
+                            android:textColor="@color/blue"
+                            android:layout_marginBottom="2dp"/>
+                        <TextView
+                            android:id="@+id/rcity"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="20sp"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="전화번호"
+                            android:textSize="20sp"
+                            android:layout_marginTop="20dp"
+                            android:textColor="@color/blue"
+                            android:layout_marginBottom="2dp"/>
+                        <TextView
+                            android:id="@+id/rtel"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="20sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="상세 설명"
+                    android:textSize="20sp"
+                    android:layout_marginTop="20dp"
+                    android:textColor="@color/blue"
+                    android:layout_marginBottom="2dp"/>
+                <TextView
+                    android:id="@+id/rinfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:layout_marginBottom="10dp"/>
+
+
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"

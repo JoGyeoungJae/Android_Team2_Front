@@ -98,13 +98,39 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
         val rcity = intent.getStringExtra("rcity")
         val rtel = intent.getStringExtra("rtel")
         val rinfo = intent.getStringExtra("rinfo")
-
+        binding.bigtitle.text = rtitle
         binding.rid.text = rid
         binding.rtitle.text = rtitle
         binding.rcity.text = rcity
         binding.rtel.text = rtel
         binding.rinfo.text = rinfo
         val img = intent.getStringExtra("rmainimg")
+        val starpoint = intent.getStringExtra("rstaravg")?.toDouble()
+        if (starpoint != null) {
+            if (starpoint == 5.0) {
+                binding.starimg.setImageResource(R.drawable.five)
+            }else if(starpoint < 5 && starpoint >= 4.5){
+                binding.starimg.setImageResource(R.drawable.four_half)
+            }else if(starpoint < 4.5 && starpoint >= 4){
+                binding.starimg.setImageResource(R.drawable.four)
+            }else if(starpoint < 4 && starpoint >= 3.5){
+                binding.starimg.setImageResource(R.drawable.three_half)
+            }else if(starpoint < 3.5 && starpoint >= 3){
+                binding.starimg.setImageResource(R.drawable.three)
+            }else if(starpoint < 3 && starpoint >= 2.5){
+                binding.starimg.setImageResource(R.drawable.two_half)
+            }else if(starpoint < 2.5 && starpoint >= 2){
+                binding.starimg.setImageResource(R.drawable.two)
+            }else if(starpoint < 2 && starpoint >= 1.5){
+                binding.starimg.setImageResource(R.drawable.one_half)
+            }else if(starpoint < 1.5 && starpoint >= 1){
+                binding.starimg.setImageResource(R.drawable.one)
+            }else if(starpoint < 1 && starpoint >= 0.5){
+                binding.starimg.setImageResource(R.drawable.half)
+            }else{
+                binding.starimg.setImageResource(R.drawable.zro)
+            }
+        }
         Log.d("joj",img.toString())
         Glide.with(this)
             .asBitmap()
@@ -200,6 +226,7 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
             Log.d("jojj1", intent.getStringExtra("rtotalstar").toString())
             Log.d("jojj1", intent.getStringExtra("rstaravg").toString())
             Log.d("jojj1", intent.getStringExtra("rcount").toString())
+            Log.d("jojj1", intent.getStringExtra("cid").toString())
             modintent.putExtra("rid",intent.getStringExtra("rid"))
             modintent.putExtra("rtitle",intent.getStringExtra("rtitle"))
             modintent.putExtra("rcity",intent.getStringExtra("rcity"))
@@ -211,6 +238,7 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
             modintent.putExtra("rtotalstar",intent.getStringExtra("rtotalstar"))
             modintent.putExtra("rstaravg",intent.getStringExtra("rstaravg"))
             modintent.putExtra("rcount",intent.getStringExtra("rcount"))
+            modintent.putExtra("cid",intent.getStringExtra("cid"))
             startActivity(modintent)
         }
 
@@ -236,7 +264,7 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
                 Log.d("joj",rid)
                 foodinfoService = retrofit.create(FoodInfoService::class.java)
                 val foodInfo = FoodInfo(
-                    rid,null,null,null,null,null,null,null,null,null,null
+                    rid,null,null,null,null,null,null,null,null,null,null,null
                 )
                 val call = foodinfoService.postFoodInfodelete(foodInfo)
                 call.enqueue(object : Callback<FoodInfo> {

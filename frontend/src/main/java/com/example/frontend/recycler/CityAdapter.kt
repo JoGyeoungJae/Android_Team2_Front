@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.frontend.databinding.CityitemMainBinding
 import com.example.frontend.dto.City
 import com.example.frontend.restaurant.ItemActivity
+import com.example.frontend.restaurant.SearchListActivity
 
 
 //부산맛집
@@ -36,11 +37,11 @@ class CityAdapterAdapter2(val context: Context, val datas: List<City?>?): Recycl
             Log.d("joj", city?.cid.toString())
             Log.d("joj", city?.ccity.toString())
 
-//            val intent = Intent(context, ItemActivity::class.java)
-//
-//            intent.putExtra("rid",food?.rid)
-//            intent.putExtra("rtitle",food?.rtitle)
-//            context.startActivity(intent)
+            val intent = Intent(context, SearchListActivity::class.java)
+
+            intent.putExtra("cid",city?.cid)
+            intent.putExtra("ccity",city?.ccity)
+            context.startActivity(intent)
         }
     }
 
