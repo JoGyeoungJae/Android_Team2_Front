@@ -102,7 +102,7 @@ class AddRestaurantActivity : AppCompatActivity() {
         val uname = sharedPreferences.getString("uname", null)
         val unickname = sharedPreferences.getString("unickname", null)
         val uimg = sharedPreferences.getString("uimg", null)
-
+        val role = sharedPreferences.getString("role", null)
 
         Log.d("lys","uid : $uid")
         Log.d("lys","uemail : $uemail")
@@ -110,7 +110,7 @@ class AddRestaurantActivity : AppCompatActivity() {
         Log.d("lys","uname : $uname")
         Log.d("lys","unickname : $unickname")
         Log.d("lys","uimg : $uimg")
-
+        Log.d("lys","uimg : $role")
 
 
 

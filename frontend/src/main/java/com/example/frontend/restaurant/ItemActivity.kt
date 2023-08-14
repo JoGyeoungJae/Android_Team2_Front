@@ -18,6 +18,10 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+
+import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.view.isVisible
+
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -82,6 +86,9 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
         binding= ActivityItemBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+
+
+        
         //============================user정보=========================
         // SharedPreferences 객체생성=================저장된 값을 가져오기 위해=====================================
         val sharedPreferences = getSharedPreferences("logged_user", Context.MODE_PRIVATE)
@@ -91,7 +98,20 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
         val uname = sharedPreferences.getString("uname", null)
         unickname = sharedPreferences.getString("unickname", null).toString()
         val uimg = sharedPreferences.getString("uimg", null)
+        val role = sharedPreferences.getString("role", null)
             
+        val Role = role.toString()
+
+        binding.mod.isVisible = false
+        binding.del.isVisible = false
+
+
+
+        if(Role.equals("ADMIN")){
+            binding.mod.isVisible = true
+            binding.del.isVisible = true
+
+        }
         //user가 있을경우 없을경우
         if(unickname !=null){
             binding.commentUserIdTextView.text = unickname.toString()

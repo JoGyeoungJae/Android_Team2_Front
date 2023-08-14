@@ -14,5 +14,7 @@ data class Login(
     @SerializedName("unickname")
     val unickname:String,
     @SerializedName("uimg")
-    val uimg:String
+    val uimg:String,
+    @SerializedName("role")
+    val role:String
     )
