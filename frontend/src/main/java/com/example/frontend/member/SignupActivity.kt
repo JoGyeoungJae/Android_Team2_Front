@@ -88,7 +88,7 @@ class SignupActivity : AppCompatActivity() {
 
 
                 val bitmap = BitmapFactory.decodeStream(inputStream, null, option)
-                inputStream!!.close()
+                inputStream.close()
                 bitmap?.let {
                     binding.userImageView.setImageBitmap(bitmap)
                 } ?: let{

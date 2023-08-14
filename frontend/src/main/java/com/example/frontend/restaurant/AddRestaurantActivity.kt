@@ -80,7 +80,7 @@ class AddRestaurantActivity : AppCompatActivity() {
         if(it.resultCode === android.app.Activity.RESULT_OK){
             //가져온 이미지를 처리를 글라이드를 이용
             Glide
-                .with(getApplicationContext())
+                .with(applicationContext)
                 //선택한 이미지를 불러오는 역할
                 .load(it.data?.data)
                 //출력 사진의 크기
@@ -94,7 +94,7 @@ class AddRestaurantActivity : AppCompatActivity() {
             * 이미지의 위치가 있는 URI 주소,
             * MediaStore.Images.Media.DATA 이미지의 정보*/
             val cursor = contentResolver.query(it.data?.data as Uri,
-                arrayOf<String>(MediaStore.Images.Media.DATA), null, null, null);
+                arrayOf<String>(MediaStore.Images.Media.DATA), null, null, null)
             cursor?.moveToFirst().let {
                 // filePath=cursor?.getString(0) as String 경로 주소
                 //log로 찍어서 확인 가능

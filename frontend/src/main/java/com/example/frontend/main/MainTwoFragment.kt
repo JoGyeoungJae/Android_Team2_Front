@@ -35,7 +35,7 @@ class MainTwoFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentMainTwoBinding.inflate(inflater, container, false)
         // binding 초기화
         // Inflate the layout for this fragment

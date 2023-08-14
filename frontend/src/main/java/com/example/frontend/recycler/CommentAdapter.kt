@@ -9,9 +9,7 @@ import com.example.frontend.dto.Comment
 
 class CommentAdapter(private val commentList: List<Comment>) : RecyclerView
 .Adapter<CommentAdapter.CommentViewHolder>() {
-    class CommentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
-    }
+    class CommentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.activity_detail, parent, false)

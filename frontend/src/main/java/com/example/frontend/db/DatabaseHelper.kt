@@ -49,7 +49,7 @@ class DatabaseHelper(context: Context?) : SQLiteOpenHelper
         contentValues.put(COL_4, memname)
         contentValues.put(COL_5, mememail)
         val result = db.insert(TABLE_NAME, null, contentValues)
-        return if (result == -1L) false else true
+        return result != -1L
     }
     // 데이터베이스 추가하기 insert
     fun     selectData(memid: String?): Boolean {
@@ -61,7 +61,7 @@ class DatabaseHelper(context: Context?) : SQLiteOpenHelper
         val contentValues = ContentValues()
         contentValues.put(COL_2, memid)
         val result = db.insert(TABLE_NAME, null, contentValues)
-        return if (result == -1L) false else true
+        return result != -1L
     }
     //데이터베이스 항목 읽어오기 Read
     val allData: Cursor

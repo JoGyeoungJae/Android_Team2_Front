@@ -124,7 +124,7 @@ class DetailActivity : AppCompatActivity() {
             return 0.0
         }
 
-        val totalRating = comments.sumBy { it.rating }
+        val totalRating = comments.sumOf { it.rating }
         return totalRating.toDouble() / comments.size
     }
 }

@@ -13,10 +13,12 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatRatingBar
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
@@ -33,7 +35,6 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.material.internal.ViewUtils.hideKeyboard
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
@@ -190,10 +191,12 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
             val storageRef: StorageReference = storage.reference
             //파이어베이스 스토리지의 profile_images 라는 패키지 안에  reviewimg.jpg 라는 이미지로 바꿔야된다.
             val imgRef: StorageReference = storageRef.child("profile_images/reviewimg.jpg")
+
             val bitmap = getBitmapFromView(binding.reviewImageView)
             val baos = ByteArrayOutputStream()
             bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, baos)
             val data = baos.toByteArray()
+
             //mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
 
             val cmt = binding.commentInputEditText.text.toString()
@@ -213,6 +216,61 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
                 val uid="adimin"
                 comments.add(CommentWithRating(cmt, rating, currentTime, uid))
 
+                if (data.isEmpty()) {
+                    //이미지가 없는 경우
+                    val noImageMessage = "이미지 없음"
+                    comments.add(CommentWithRating(cmt, rating, currentTime, uid, noImageMessage))
+                    binding.reviewImageView.setImageResource(R.drawable.no_image_placeholder)
+                } else {
+                    //이미지가 있는 경우
+                    //파이어베이스에 사진을 올리고, 그 사진의 url을 따온다음? 다른데이터와 함께 스프링부트에 전송mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+                    var uploadTask = imgRef.putBytes(data)
+                    uploadTask.addOnSuccessListener { _ ->
+                        Log.d("lsy", "이미지 업로드 성공")
+                        // 이미지 업로드 후 다운로드 URL 가져오기
+                        imgRef.downloadUrl.addOnSuccessListener { uri ->
+                            val downloadUrl = uri.toString()
+                            Log.d("lsy", "Download URL: $downloadUrl")
+                            val reviewimg = downloadUrl
+
+                            // TODO: 필요한 대로 downloadUrl을 사용합니다.
+                            //Retrofit 인스턴스 생성, 서버로 값 전송
+                            val retrofit = Retrofit.Builder()
+                                .baseUrl("http://10.100.103.23:8080/") //백엔드 API 주소
+                                .addConverterFactory(GsonConverterFactory.create())
+                                .build()
+                            val uid="adimin"
+                            val comment = Comment(cmt, formattedTime, reviewimg, uid) //Comment 클래스는 댓글 데이터 모델을 나타냄
+                            val apiService = retrofit.create(ApiService::class.java)
+
+                            //댓글, 시간, 등록한 이미지의 url이 comment에 담겨있는데,
+                            //ApiService 안에 선언한 함수 @POST("comments") postComment 이것을 통해서 스프링부트에다가 POST하는것
+                            val call = apiService.postComment(comment)
+
+                            //이 부분은 POST한 이후 응답을 처리하는 부분
+                            call.enqueue(object : Callback<Comment> {
+                                override fun onResponse(
+                                    call: Call<Comment>,
+                                    response: Response<Comment>
+                                ) {
+                                    //요청이 성공적으로 처리되었을 때 실행되는 코드
+                                    //댓글 등록 후, 등록한 시간을 commentTimeTextView에 업데이트
+                                    binding.commentTimeTextView.text = formattedTime
+
+                                    //댓글 입력 필드 및 별점 초기화
+                                    binding.commentInputEditText.text.clear()
+                                    binding.ratingBar.rating = 0.0f
+                                }
+
+                                override fun onFailure(call: Call<Comment>, t: Throwable) {
+                                    //요청이 실패했을 때 실행되는 코드
+                                }
+                            })
+
+                        }
+                    }
+                }
+
                 //댓글 작성 후 달린 댓글 및 평균 별점 표시
                 updateCommentTextViewAndRating()
 
@@ -224,61 +282,11 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
                 //댓글 등록 후 키패드 닫기
                 hideKeyboard()
 
-
-//                //현재 시간을 가져와서 포맷팅
-//                val dataFormat = SimpleDateFormat("(yyyy-MM-dd HH:mm)", Locale.getDefault())
-//                val formattedTime = dataFormat.format(Date(currentTime))
-
-                //파이어베이스에 사진을 올리고, 그 사진의 url을 따온다음? 다른데이터와 함께 스프링부트에 전송mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
-                var uploadTask = imgRef.putBytes(data)
-                uploadTask.addOnSuccessListener { _ ->
-                    Log.d("lsy", "이미지 업로드 성공")
-                    // 이미지 업로드 후 다운로드 URL 가져오기
-                    imgRef.downloadUrl.addOnSuccessListener { uri ->
-                        val downloadUrl = uri.toString()
-                        Log.d("lsy", "Download URL: $downloadUrl")
-                        val reviewimg = downloadUrl
-
-                        // TODO: 필요한 대로 downloadUrl을 사용합니다.
-                        //Retrofit 인스턴스 생성, 서버로 값 전송
-                        val retrofit = Retrofit.Builder()
-                            .baseUrl("http://192.168.35.61:8080/") //백엔드 API 주소
-                            .addConverterFactory(GsonConverterFactory.create())
-                            .build()
-                        val uid="adimin"
-                        val comment = Comment(cmt, formattedTime, reviewimg, uid) //Comment 클래스는 댓글 데이터 모델을 나타냄
-                        val apiService = retrofit.create(ApiService::class.java)
-
-                        //댓글, 시간, 등록한 이미지의 url이 comment에 담겨있는데,
-                        //ApiService 안에 선언한 함수 @POST("comments") postComment 이것을 통해서 스프링부트에다가 POST하는것
-                        val call = apiService.postComment(comment)
-
-                        //이 부분은 POST한 이후 응답을 처리하는 부분
-                        call.enqueue(object : Callback<Comment> {
-                            override fun onResponse(
-                                call: Call<Comment>,
-                                response: Response<Comment>
-                            ) {
-                                //요청이 성공적으로 처리되었을 때 실행되는 코드
-                                //댓글 등록 후, 등록한 시간을 commentTimeTextView에 업데이트
-                                binding.commentTimeTextView.text = formattedTime
-
-                                //댓글 입력 필드 및 별점 초기화
-                                binding.commentInputEditText.text.clear()
-                                binding.ratingBar.rating = 0.0f
-                            }
-
-                            override fun onFailure(call: Call<Comment>, t: Throwable) {
-                                //요청이 실패했을 때 실행되는 코드
-                            }
-                        })
-
-                    }
-                }
                 //mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
 
             }
         }
+
     }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (toggle.onOptionsItemSelected(item)) {
@@ -311,13 +319,23 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun updateCommentTextViewAndRating() {
-        val combinedComments = comments.joinToString("\n") {
-            "${it.comment} (별점: ${it.rating}, 시간: $formattedTime)"
+
+        var combinedComments = ""
+        for(comment in comments) {
+            if(comment.message == "이미지 없음")  {
+                combinedComments += "별점 : ${comment.rating} \n 이미지 없음 ${comment.comment} ${formattedTime}\n"
+            } else {
+                combinedComments += "별점 : ${comment.rating} \n ${comment.comment} ${formattedTime}\n"
+            }
         }
+
+//        combinedComments = comments.joinToString("\n") {
+//            "${it.comment} (별점: ${it.rating}, 시간: $formattedTime)"
+//        }
         binding.commentTextView.text = "\n$combinedComments"
 
-        val averageRating = calculateAverageRating()
-        binding.ratingAverageTextView.text = "평균 별점: %.2f점".format(averageRating)
+//        val averageRating = calculateAverageRating()
+//        binding.ratingAverageTextView.text = "평균 별점: %.2f점".format(averageRating)
     }
 
     private fun calculateAverageRating() : Double {
