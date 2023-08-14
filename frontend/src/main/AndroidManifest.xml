@@ -21,6 +21,9 @@
         android:theme="@style/Theme.Frontend"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".restaurant.ModReviewActivity"
+            android:exported="false" />
+        <activity
             android:name=".restaurant.AllListActivity"
             android:exported="false" />
         <activity

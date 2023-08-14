@@ -11,12 +11,4 @@
         android:layout_height="match_parent"
         android:src="@drawable/intro">
     </ImageView>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:text="INTRO...."
-        android:textColor="@color/white"
-        android:textSize="50dp"
-        android:gravity="center_horizontal|center_vertical"
-        />
 </androidx.drawerlayout.widget.DrawerLayout>

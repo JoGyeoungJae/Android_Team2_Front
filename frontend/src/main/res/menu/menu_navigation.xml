@@ -23,6 +23,7 @@
         android:id="@+id/addrestaurant"
         android:title="맛집등록"/>
     <item
-        android:title="아이템4"/>
+        android:id="@+id/addHome"
+        android:title="Home"/>
 
 </menu>
