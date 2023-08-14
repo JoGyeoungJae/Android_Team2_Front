@@ -13,6 +13,8 @@ interface FoodInfoService {
     fun getFoodInfoList(): Call<List<FoodInfo?>?>?
     @GET("/getFoodstarmaxList")
     fun getFoodstarmaxList(): Call<List<FoodInfo?>?>?
+    @GET("/getFoodone")
+    fun getFoodone(@Query("rid") rid: String): Call<FoodInfo?>?
     @GET("/getSearchList")
     fun getSearchList(@Query("cid") cid: String): Call<List<FoodInfo?>?>?
 

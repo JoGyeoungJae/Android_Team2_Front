@@ -47,6 +47,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
+        Log.d("joj","onCreate 호출")
 
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -93,7 +94,12 @@ class MainActivity : AppCompatActivity() {
             if (it.itemId == R.id.joinmenu) {
                 val intent = Intent(this, SignupActivity::class.java)
                 startActivity(intent)
-            } else if (it.itemId == R.id.login) {
+            } else if (it.itemId == R.id.addHome) {
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
+            else if (it.itemId == R.id.login) {
                 val intent = Intent(this, LoginActivity::class.java)
                 startActivity(intent)
             } else if (it.itemId == R.id.logout) {
@@ -113,8 +119,9 @@ class MainActivity : AppCompatActivity() {
                 logged.apply()
 
                 Toast.makeText(this, "로그아웃 완료", Toast.LENGTH_SHORT).show()
-                val intent = Intent(this, MainActivity::class.java)
+                val intent = Intent(this, LoginActivity::class.java)
                 startActivity(intent)
+                finish()
 
             } else if (it.itemId == R.id.modify) {
                 val intent = Intent(this, ModifyActivity::class.java)
@@ -213,12 +220,14 @@ class MainActivity : AppCompatActivity() {
                     val adapter = CityAdapterAdapter2(this@MainActivity, citys)
 
                     binding.recyclerViewone.adapter = adapter
-
+                    Log.d("joj", "도시 새로고침")
+//                    adapter.notifyDataSetChanged()
                 }
             }
 
             override fun onFailure(call: Call<List<City?>?>, t: Throwable) {
                 // 호출 실패 시 처리합니다.
+                
             }
         })
 
@@ -226,7 +235,7 @@ class MainActivity : AppCompatActivity() {
         foodinfoService = retrofit.create(FoodInfoService::class.java)
 
         val callimg: Call<List<FoodInfo?>?>? = foodinfoService.getFoodstarmaxList()
-        Log.d("joj", call.toString())
+        
         callimg?.enqueue(object : Callback<List<FoodInfo?>?> {
             override fun onResponse(
                 call: Call<List<FoodInfo?>?>,
@@ -238,6 +247,10 @@ class MainActivity : AppCompatActivity() {
                     val adapter = FoodImgMyAdapter2(this@MainActivity, foods)
 
                     binding.recyclerViewimg.adapter = adapter
+                    Log.d("joj", "맛집 탑5 새로고침")
+//                    adapter.notifyDataSetChanged()
+                    Log.d("joj", "맛집 탑5 새로고침")
+                    Log.d("joj", adapter.datas.toString())
 
                 }
             }
@@ -254,6 +267,33 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
+
+    override fun onStart() {
+        super.onStart()
+        Log.d("joj","onStart 호출")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("joj","onResume 호출")
+
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("joj","onPause 호출")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d("joj","onStop 호출")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("joj","onDestroy 호출")
+    }
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (toggle.onOptionsItemSelected(item)) {
