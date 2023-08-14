@@ -105,8 +105,9 @@ class LoginActivity : AppCompatActivity() {
                                        sharedPreferences.getString("uimg",null)!=null
                                     ){
                                         Toast.makeText(this@LoginActivity,"로그인 완료", Toast.LENGTH_SHORT).show()
-                                        val intent = Intent(this@LoginActivity, MainActivity::class.java)
-                                        startActivity(intent)
+                                        finish()
+//                                        val intent = Intent(this@LoginActivity, MainActivity::class.java)
+//                                        startActivity(intent)
                                     }
 
 

@@ -147,41 +147,90 @@
 
 
             </LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="리뷰"
+                android:textSize="30dp"
+                android:textColor="@color/blue"
+                android:gravity="center_horizontal|center_vertical"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="vertical"
+                android:paddingHorizontal="15dp"
+                android:paddingVertical="20dp">
 
-                <TextView
+                <LinearLayout
+                    android:id="@+id/commentUserIdLL"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="16dp"
-                    android:text="댓글목록"
-                    android:layout_marginRight="170dp"/>
+                    android:layout_height="match_parent">
 
-                <TextView
-                    android:id="@+id/ratingAverageTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="16dp" />
 
+                    <TextView
+                        android:id="@+id/commentUserIdTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/reviewImageView"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:src="@drawable/noimg"
+                    android:layout_marginTop="4dp"
+                    android:scaleType="fitXY" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+                <!--                <LinearLayout-->
+<!--                    android:id="@+id/commentRatingLL"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:orientation="horizontal"-->
+<!--                    android:layout_marginTop="8dp"-->
+<!--                    android:gravity="center_vertical">-->
+<!--                    <TextView-->
+<!--                        android:id="@+id/ratingTextView"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:padding="16dp" />-->
+<!--                </LinearLayout>-->
+
+<!--                <LinearLayout-->
+<!--                    android:id="@+id/commentContentLL"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="match_parent">-->
+<!--                    <TextView-->
+<!--                        android:id="@+id/commentTextView"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:paddingHorizontal="16dp"-->
+<!--                        android:text="내용" />-->
+
+<!--                    <TextView-->
+<!--                        android:id="@+id/commentTimeTextView"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:padding="16dp"-->
+<!--                        android:text=""-->
+<!--                        android:textColor="#888888"/>-->
+<!--                </LinearLayout>-->
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/commentTextView"
-                android:layout_width="match_parent"
+            <Button
+                android:id="@+id/setimageBtn"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="#eeeeee"
-                android:padding="80dp"
-                android:text="달린댓글이 없습니다." />
-
-            <TextView
-                android:id="@+id/commentTimeTextView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:text=""
-                android:textColor="#888888" />
+                android:text="사진등록"
+                android:layout_gravity="center_vertical|center_horizontal"/>
 
             <RatingBar
                 android:id="@+id/ratingBar"
@@ -228,5 +277,5 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         app:headerLayout="@layout/navigation_header"
-        app:menu="@menu/menu_navigation" />
+        app:menu="@menu/menu_navigation"/>
 </androidx.drawerlayout.widget.DrawerLayout>

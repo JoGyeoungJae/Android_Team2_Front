@@ -198,12 +198,14 @@ class MainActivity : AppCompatActivity() {
                     val adapter = CityAdapterAdapter2(this@MainActivity, citys)
 
                     binding.recyclerViewone.adapter = adapter
-
+                    Log.d("joj", "도시 새로고침")
+                  //  adapter.notifyDataSetChanged()
                 }
             }
 
             override fun onFailure(call: Call<List<City?>?>, t: Throwable) {
                 // 호출 실패 시 처리합니다.
+                
             }
         })
 
@@ -211,7 +213,7 @@ class MainActivity : AppCompatActivity() {
         foodinfoService = retrofit.create(FoodInfoService::class.java)
 
         val callimg: Call<List<FoodInfo?>?>? = foodinfoService.getFoodstarmaxList()
-        Log.d("joj", call.toString())
+        
         callimg?.enqueue(object : Callback<List<FoodInfo?>?> {
             override fun onResponse(
                 call: Call<List<FoodInfo?>?>,
@@ -223,6 +225,10 @@ class MainActivity : AppCompatActivity() {
                     val adapter = FoodImgMyAdapter2(this@MainActivity, foods)
 
                     binding.recyclerViewimg.adapter = adapter
+                    Log.d("joj", "맛집 탑5 새로고침")
+                   // adapter.notifyDataSetChanged()
+                    Log.d("joj", "맛집 탑5 새로고침")
+                    Log.d("joj", adapter.datas.toString())
 
                 }
             }
