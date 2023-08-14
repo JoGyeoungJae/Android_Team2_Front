@@ -73,6 +73,11 @@ class MainActivity : AppCompatActivity() {
 //        Log.d("lys", "role : $role")
 
 
+
+
+
+
+
         //====================토글 메뉴============================
         setSupportActionBar(binding.toolbar)
         toggle = ActionBarDrawerToggle(

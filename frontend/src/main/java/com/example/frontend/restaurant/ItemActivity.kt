@@ -13,6 +13,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
@@ -64,6 +65,41 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
 
         binding= ActivityItemBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // SharedPreferences 객체생성=================저장된 값을 가져오기 위해=====================================
+        val sharedPreferences = getSharedPreferences("logged_user", Context.MODE_PRIVATE)
+        val uid = sharedPreferences.getString("uid", null)
+        val uemail = sharedPreferences.getString("uemail", null)
+        val upassword = sharedPreferences.getString("upassword", null)
+        val uname = sharedPreferences.getString("uname", null)
+        val unickname = sharedPreferences.getString("unickname", null)
+        val uimg = sharedPreferences.getString("uimg", null)
+        val role = sharedPreferences.getString("role", null)
+
+        Log.d("lys","uid : $uid")
+        Log.d("lys","uemail : $uemail")
+        Log.d("lys","upassword : $upassword")
+        Log.d("lys","uname : $uname")
+        Log.d("lys","unickname : $unickname")
+        Log.d("lys","uimg : $uimg")
+        Log.d("lys","uimg : $role")
+
+
+        val Role = role.toString()
+
+        binding.mod.isVisible = false
+        binding.del.isVisible = false
+
+
+
+        if(Role.equals("ADMIN")){
+            binding.mod.isVisible = true
+            binding.del.isVisible = true
+
+        }
+
+
+
         //====================토글 메뉴==========================
         setSupportActionBar(binding.toolbar)
         toggle = ActionBarDrawerToggle(
