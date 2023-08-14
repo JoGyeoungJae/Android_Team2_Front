@@ -71,6 +71,7 @@ class ModifyActivity : AppCompatActivity() {
         val uname = sharedPreferences.getString("uname", null)
         val unickname = sharedPreferences.getString("unickname", null)
         val uimg = sharedPreferences.getString("uimg", null)
+        val role = sharedPreferences.getString("role", null)
 
 
         Log.d("lys","uid : $uid")
@@ -79,6 +80,7 @@ class ModifyActivity : AppCompatActivity() {
         Log.d("lys","uname : $uname")
         Log.d("lys","unickname : $unickname")
         Log.d("lys","uimg : $uimg")
+        Log.d("lys","role : $role")
 
         //기존의 이미지가 정보 수정창에 뜨도록 하는 코드
         val userImageView = findViewById<ImageView>(R.id.userImageView)
@@ -203,18 +205,19 @@ class ModifyActivity : AppCompatActivity() {
 
         //스프링에 데이터보내는 부분
         binding.modifyButton.setOnClickListener{
-            modify(uid, uemail, upassword, uname, unickname, uimg)
+            modify(uid, uemail, upassword, uname, unickname, uimg, role)
         }
 
 
     }
 
 
-    private fun modify(uid:String?, uemail:String?, upassword:String?, uname:String?, unickname:String?, uimg:String?){
+    private fun modify(uid:String?, uemail:String?, upassword:String?, uname:String?, unickname:String?, uimg:String?, role:String?){
         val memail = binding.modifyEmail.text.toString()
         val mpassword = binding.modifyPassword.text.toString()
         val mname = binding.modifyName.text.toString()
         val mnickname = binding.modifyNickname.text.toString()
+        val role = role.toString()
         val existingImage = uimg.toString()
 //        Log.d("lys","kiki")
 //        Log.d("lys","uid : $uid")
@@ -255,7 +258,7 @@ class ModifyActivity : AppCompatActivity() {
                         //서버로 값 전송
 
                         val retrofit = DBConnect2.retrofit
-                        val user = User(memail, mpassword, mname, mnickname, mimg)
+                        val user = User(memail, mpassword, mname, mnickname, mimg, role)
                         val apiService = retrofit.create(ApiService::class.java)
 
                         val call = apiService.modify(user)
@@ -328,7 +331,7 @@ class ModifyActivity : AppCompatActivity() {
 
                         val retrofit = DBConnect2.retrofit
 
-                        val user = User(memail, mpassword, mname, mnickname, mimg)
+                        val user = User(memail, mpassword, mname, mnickname, mimg, role)
                         val apiService = retrofit.create(ApiService::class.java)
 
                         val call = apiService.modify(user)
@@ -389,7 +392,7 @@ class ModifyActivity : AppCompatActivity() {
 
                         val retrofit = DBConnect2.retrofit
 
-                        val user = User(memail, mpassword, mname, mnickname, existingImage)
+                        val user = User(memail, mpassword, mname, mnickname, existingImage, role)
                         val apiService = retrofit.create(ApiService::class.java)
 
                         val call = apiService.modify(user)

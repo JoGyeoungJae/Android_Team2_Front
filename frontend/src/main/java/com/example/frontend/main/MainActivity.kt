@@ -61,14 +61,16 @@ class MainActivity : AppCompatActivity() {
         val uname = sharedPreferences.getString("uname", null)
         val unickname = sharedPreferences.getString("unickname", null)
         val uimg = sharedPreferences.getString("uimg", null)
+        val role = sharedPreferences.getString("role", null)
 
 
-        Log.d("lys", "uid : $uid")
-        Log.d("lys", "uemail : $uemail")
-        Log.d("lys", "upassword : $upassword")
-        Log.d("lys", "uname : $uname")
-        Log.d("lys", "unickname : $unickname")
-        Log.d("lys", "uimg : $uimg")
+//        Log.d("lys", "uid : $uid")
+//        Log.d("lys", "uemail : $uemail")
+//        Log.d("lys", "upassword : $upassword")
+//        Log.d("lys", "uname : $uname")
+//        Log.d("lys", "unickname : $unickname")
+//        Log.d("lys", "uimg : $uimg")
+//        Log.d("lys", "role : $role")
 
 
         //====================토글 메뉴============================
@@ -101,7 +103,7 @@ class MainActivity : AppCompatActivity() {
                 logged.putString("uname", null)
                 logged.putString("unickname", null)
                 logged.putString("uimg", null)
-
+                logged.putString("role", null)
                 // 변경 사항을 커밋하여 저장
                 logged.apply()
 
@@ -136,8 +138,8 @@ class MainActivity : AppCompatActivity() {
         val requestLogin = headerView.findViewById<TextView>(R.id.requestLogin)
 
 
-        if (uid != null && uemail != null && upassword != null && uname != null && unickname != null && uimg != null) {
-
+        if (uid != null && uemail != null && upassword != null && uname != null && unickname != null && uimg != null && role != null) {
+            val Role = role.toString()
             requestLogin.visibility = View.GONE
 
             //프로필 이미지 설정
@@ -153,8 +155,8 @@ class MainActivity : AppCompatActivity() {
 
 
             // 값을 TextView에 설정
-            loggedUserNickname.text = "Nickname: $unickname"
-            loggedUserEmail.text = "Email: $uemail"
+            loggedUserNickname.text = "닉네임: $unickname"
+            loggedUserEmail.text = "이메일: $uemail"
 
 
             //쉐어드 프리퍼런스에 값이 null이 아닌경우 = 로그인된 경우            에만 ?
@@ -166,6 +168,13 @@ class MainActivity : AppCompatActivity() {
             navigationMenu.findItem(R.id.logout)?.isVisible = true
             navigationMenu.findItem(R.id.modify)?.isVisible = true
             navigationMenu.findItem(R.id.delete)?.isVisible = true
+            navigationMenu.findItem(R.id.addrestaurant)?.isVisible = false
+
+            if(Role.equals("ADMIN")){
+                navigationMenu.findItem(R.id.addrestaurant)?.isVisible = true
+            }
+
+
 
 
         } else {
@@ -182,6 +191,7 @@ class MainActivity : AppCompatActivity() {
             navigationMenu.findItem(R.id.logout)?.isVisible = false
             navigationMenu.findItem(R.id.modify)?.isVisible = false
             navigationMenu.findItem(R.id.delete)?.isVisible = false
+            navigationMenu.findItem(R.id.addrestaurant)?.isVisible = false
 
         }
         val retrofit = DBConnect.retrofit

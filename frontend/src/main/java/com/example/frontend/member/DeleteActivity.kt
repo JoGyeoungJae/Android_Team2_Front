@@ -13,6 +13,8 @@ import com.example.frontend.db.DBConnect2
 import com.example.frontend.dto.User
 import com.example.frontend.main.MainActivity
 import com.example.frontend.service.ApiService
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -35,6 +37,7 @@ class DeleteActivity : AppCompatActivity() {
         val uname = sharedPreferences.getString("uname", null)
         val unickname = sharedPreferences.getString("unickname", null)
         val uimg = sharedPreferences.getString("uimg", null)
+        val role = sharedPreferences.getString("role", null)
 
 
         Log.d("lys","uid : $uid")
@@ -43,33 +46,36 @@ class DeleteActivity : AppCompatActivity() {
         Log.d("lys","uname : $uname")
         Log.d("lys","unickname : $unickname")
         Log.d("lys","uimg : $uimg")
+        Log.d("lys","role : $role")
 
 
         val deleteEmail = findViewById<TextView>(R.id.deleteEmail)
-        deleteEmail.text = "$uemail"
+        deleteEmail.text = "이메일 : $uemail"
         val deleteName = findViewById<TextView>(R.id.deleteName)
-        deleteName.text = "$uname"
+        deleteName.text = "이름 : $uname"
         val deleteNickname = findViewById<TextView>(R.id.deleteNickname)
-        deleteNickname.text = "$unickname"
+        deleteNickname.text = "닉네임 : $unickname"
 
 
         binding.deleteButton.setOnClickListener {
-            delete(uid, uemail, upassword, uname, unickname, uimg)
+            delete(uid, uemail, upassword, uname, unickname, uimg, role)
 
         }
 
     }
 
-    private fun delete(uid:String?, uemail:String?, upassword:String?, uname:String?, unickname:String?, uimg:String?) {
+    private fun delete(uid:String?, uemail:String?, upassword:String?, uname:String?, unickname:String?, uimg:String?, role:String?) {
 
         val demail = uemail.toString()
         val dpassword = upassword.toString()
         val dname = uname.toString()
         val dnickname = unickname.toString()
         val dimg = uimg.toString()
+        val role = role.toString()
+
 
         val retrofit = DBConnect2.retrofit
-        val user = User(demail, dpassword, dname, dnickname, dimg)
+        val user = User(demail, dpassword, dname, dnickname, dimg, role)
         val apiService = retrofit.create(ApiService::class.java)
 
         val call = apiService.delete(user)
@@ -94,7 +100,24 @@ class DeleteActivity : AppCompatActivity() {
                         logged.putString("uname", null)
                         logged.putString("unickname", null)
                         logged.putString("uimg", null)
+                        logged.putString("role",null)
                         logged.apply()
+
+
+                        // 파이어베이스 스토리지 이미지 삭제
+                        val storage = Firebase.storage
+                        val storageRef = storage.reference
+                        val imageName = "$uemail.jpg"
+                        val imgRef = storageRef.child("profile_images/$imageName")
+
+                        imgRef.delete()
+                            .addOnSuccessListener {
+                                Log.d("lys", "이미지 삭제 성공: $imageName")
+                            }.addOnFailureListener {
+                                Log.d("lys", "이미지 삭제 실패: $imageName")
+                        }
+
+
 
                         //정상적으로 동작하면 다른 화면으로 이동하게끔
                         Toast.makeText(this@DeleteActivity,"회원탈퇴 완료", Toast.LENGTH_SHORT).show()
