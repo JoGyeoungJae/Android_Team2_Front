@@ -59,7 +59,7 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
     private val storage = Firebase.storage
     private lateinit var filePath: String
 
-    //1
+    //11
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
