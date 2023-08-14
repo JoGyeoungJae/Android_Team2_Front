@@ -66,6 +66,7 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
         binding= ActivityItemBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+
         // SharedPreferences 객체생성=================저장된 값을 가져오기 위해=====================================
         val sharedPreferences = getSharedPreferences("logged_user", Context.MODE_PRIVATE)
         val uid = sharedPreferences.getString("uid", null)
@@ -97,7 +98,6 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
             binding.del.isVisible = true
 
         }
-
 
 
         //====================토글 메뉴==========================
@@ -326,6 +326,9 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
             val refreshIntent = Intent(this@ItemActivity, MainActivity::class.java)
             startActivity(refreshIntent)
             }
+
+
+
     }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (toggle.onOptionsItemSelected(item)) {
