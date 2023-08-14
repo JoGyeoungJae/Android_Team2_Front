@@ -17,4 +17,10 @@ interface ReviewService {
 
     @GET("/getReviewList")
     fun getReviewList(@Query("uid") uid: String,@Query("rid") rid: String): Call<List<Comment?>?>?
+    @GET("/getReviewOne")
+    fun getReviewOne(@Query("uid") uid: String,@Query("rid") rid: String): Call<Comment?>?
+    @POST("postReviewMod")
+    fun postReviewMod(@Body comment: Comment): Call<Comment>
+    @POST("delreview")
+    fun delreview(@Query("id") id: String): Call<Comment>
 }

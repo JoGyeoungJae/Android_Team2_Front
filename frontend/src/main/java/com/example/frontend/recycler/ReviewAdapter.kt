@@ -39,30 +39,30 @@ class ReviewMyAdapter2(val context: Context, val datas: List<Comment?>?): Recycl
         val urlImg = review?.reviewimg
         binding.date.text = review?.timestamp
         binding.content.text = review?.cmt
-        val starpoint = 3.3
+        val starpoint = review?.starpoint?.toDouble()
         if (starpoint != null) {
             if (starpoint == 5.0) {
-                binding.starimg.setImageResource(R.drawable.five)
+                binding.starimg1.setImageResource(R.drawable.five)
             }else if(starpoint < 5 && starpoint >= 4.5){
-                binding.starimg.setImageResource(R.drawable.four_half)
+                binding.starimg1.setImageResource(R.drawable.four_half)
             }else if(starpoint < 4.5 && starpoint >= 4){
-                binding.starimg.setImageResource(R.drawable.four)
+                binding.starimg1.setImageResource(R.drawable.four)
             }else if(starpoint < 4 && starpoint >= 3.5){
-                binding.starimg.setImageResource(R.drawable.three_half)
+                binding.starimg1.setImageResource(R.drawable.three_half)
             }else if(starpoint < 3.5 && starpoint >= 3){
-                binding.starimg.setImageResource(R.drawable.three)
+                binding.starimg1.setImageResource(R.drawable.three)
             }else if(starpoint < 3 && starpoint >= 2.5){
-                binding.starimg.setImageResource(R.drawable.two_half)
+                binding.starimg1.setImageResource(R.drawable.two_half)
             }else if(starpoint < 2.5 && starpoint >= 2){
-                binding.starimg.setImageResource(R.drawable.two)
+                binding.starimg1.setImageResource(R.drawable.two)
             }else if(starpoint < 2 && starpoint >= 1.5){
-                binding.starimg.setImageResource(R.drawable.one_half)
+                binding.starimg1.setImageResource(R.drawable.one_half)
             }else if(starpoint < 1.5 && starpoint >= 1){
-                binding.starimg.setImageResource(R.drawable.one)
+                binding.starimg1.setImageResource(R.drawable.one)
             }else if(starpoint < 1 && starpoint >= 0.5){
-                binding.starimg.setImageResource(R.drawable.half)
+                binding.starimg1.setImageResource(R.drawable.half)
             }else{
-                binding.starimg.setImageResource(R.drawable.zro)
+                binding.starimg1.setImageResource(R.drawable.zro)
             }
         }
         Glide.with(context)

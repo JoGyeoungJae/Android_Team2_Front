@@ -73,7 +73,8 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
     private val storage = Firebase.storage
     lateinit var  uid : String
     lateinit var  unickname : String
-
+    lateinit var  id : String
+    lateinit var  rid : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -175,32 +176,118 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
         binding.rtel.text = rtel
         binding.rinfo.text = rinfo
         val img = intent.getStringExtra("rmainimg")
-        val starpoint = intent.getStringExtra("rstaravg")?.toDouble()
-        if (starpoint != null) {
-            if (starpoint == 5.0) {
-                binding.starimg.setImageResource(R.drawable.five)
-            }else if(starpoint < 5 && starpoint >= 4.5){
-                binding.starimg.setImageResource(R.drawable.four_half)
-            }else if(starpoint < 4.5 && starpoint >= 4){
-                binding.starimg.setImageResource(R.drawable.four)
-            }else if(starpoint < 4 && starpoint >= 3.5){
-                binding.starimg.setImageResource(R.drawable.three_half)
-            }else if(starpoint < 3.5 && starpoint >= 3){
-                binding.starimg.setImageResource(R.drawable.three)
-            }else if(starpoint < 3 && starpoint >= 2.5){
-                binding.starimg.setImageResource(R.drawable.two_half)
-            }else if(starpoint < 2.5 && starpoint >= 2){
-                binding.starimg.setImageResource(R.drawable.two)
-            }else if(starpoint < 2 && starpoint >= 1.5){
-                binding.starimg.setImageResource(R.drawable.one_half)
-            }else if(starpoint < 1.5 && starpoint >= 1){
-                binding.starimg.setImageResource(R.drawable.one)
-            }else if(starpoint < 1 && starpoint >= 0.5){
-                binding.starimg.setImageResource(R.drawable.half)
-            }else{
-                binding.starimg.setImageResource(R.drawable.zro)
+        //=========================별점 가지고 오기================
+        val retrofit = DBConnect.retrofit
+
+        foodinfoService = retrofit.create(FoodInfoService::class.java)
+
+        val call: Call<FoodInfo?>? = foodinfoService.getFoodone(rid.toString())
+        Log.d("joj",call.toString())
+        call?.enqueue(object : Callback<FoodInfo?> {
+            override fun onResponse(call: Call<FoodInfo?>, response: Response<FoodInfo?>) {
+                if (response.isSuccessful) {
+                    val foodInfo = response.body()
+                    updateStarRatingImage(foodInfo?.rstaravg)
+                    // foodInfo를 사용하여 필요한 작업 수행
+                    if (foodInfo != null) {
+                        // 예시: 응답 데이터의 이름을 로그로 출력
+
+                        Log.d("joj", "Food Name: ${foodInfo.rtitle}")
+                    } else {
+                        Log.d("joj", "No data received")
+                    }
+                } else {
+                    // 응답이 성공하지 않은 경우
+                    Log.d("joj", "Response not successful")
+                }
             }
-        }
+
+            override fun onFailure(call: Call<FoodInfo?>, t: Throwable) {
+                // 호출 실패 시 처리합니다.
+            }
+        })
+
+// 자기글 하나 들고 오기
+
+        reviewService = retrofit.create(ReviewService::class.java)
+
+        val call1: Call<Comment?>? = reviewService.getReviewOne(uid,rid.toString())
+        call1?.enqueue(object : Callback<Comment?> {
+            override fun onResponse(call1: Call<Comment?>, response: Response<Comment?>) {
+                if (response.isSuccessful) {
+                    val revieOne = response.body()
+                    // foodInfo를 사용하여 필요한 작업 수행
+                    if (revieOne != null) {
+                        // 예시: 응답 데이터의 이름을 로그로 출력
+                        id = revieOne.id.toString()
+                        binding.modcontent.text = revieOne.cmt
+                        binding.moddate.text = revieOne.timestamp
+                        val urlImg = revieOne?.reviewimg
+                        binding.modnickname.text = revieOne.nickname
+                        val starpoint = revieOne.starpoint.toDouble()
+                        Log.d("joj","별점")
+                        Log.d("joj",starpoint.toString())
+                        if (starpoint != null) {
+                            // 별점 이미지 설정 작업
+                            if (starpoint == 5.0) {
+                                binding.modstarimg1.setImageResource(R.drawable.five)
+                            } else if (starpoint < 5 && starpoint >= 4.5) {
+                                binding.modstarimg1.setImageResource(R.drawable.four_half)
+                            } else if (starpoint < 4.5 && starpoint >= 4) {
+                                binding.modstarimg1.setImageResource(R.drawable.four)
+                            } else if (starpoint < 4 && starpoint >= 3.5) {
+                                binding.modstarimg1.setImageResource(R.drawable.three_half)
+                            } else if (starpoint < 3.5 && starpoint >= 3) {
+                                binding.modstarimg1.setImageResource(R.drawable.three)
+                            } else if (starpoint < 3 && starpoint >= 2.5) {
+                                binding.modstarimg1.setImageResource(R.drawable.two_half)
+                            } else if (starpoint < 2.5 && starpoint >= 2) {
+                                binding.modstarimg1.setImageResource(R.drawable.two)
+                            } else if (starpoint < 2 && starpoint >= 1.5) {
+                                binding.modstarimg1.setImageResource(R.drawable.one_half)
+                            } else if (starpoint < 1.5 && starpoint >= 1) {
+                                binding.modstarimg1.setImageResource(R.drawable.one)
+                            } else if (starpoint < 1 && starpoint >= 0.5) {
+                                binding.modstarimg1.setImageResource(R.drawable.half)
+                            } else {
+                                binding.modstarimg1.setImageResource(R.drawable.zro)
+                            }
+                        }
+                        Glide.with(this@ItemActivity)
+                            .asBitmap()
+                            .load(urlImg)
+                            .into(object : CustomTarget<Bitmap>(200, 200) {
+                                override fun onResourceReady(
+                                    resource: Bitmap,
+                                    transition: Transition<in Bitmap>?
+                                ) {
+                                    binding.modavatarView.setImageBitmap(resource)
+//                    Log.d("lsy", "width : ${resource.width}, height: ${resource.height}")
+                                }
+
+                                override fun onLoadCleared(placeholder: Drawable?) {
+                                    TODO("Not yet implemented")
+                                }
+                            })
+                        Log.d("joj", "Food Name: ${revieOne.cmt}")
+                    } else {
+                        Log.d("joj", "No data received")
+                    }
+                } else {
+                    // 응답이 성공하지 않은 경우
+                    Log.d("joj", "Response not successful")
+                }
+            }
+
+            override fun onFailure(call1: Call<Comment?>, t: Throwable) {
+                // 호출 실패 시 처리합니다.
+            }
+        })
+
+
+
+
+
         Log.d("joj",img.toString())
         Glide.with(this)
             .asBitmap()
@@ -419,7 +506,7 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
 
-        //=============================수정 버튼==========================================\
+        //=============================음식점 수정 버튼==========================================\
         binding.mod.setOnClickListener {
             val modintent = Intent(this@ItemActivity, RestModActivity::class.java)
             Log.d("jojj1", intent.getStringExtra("rid").toString())
@@ -449,7 +536,7 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
             startActivity(modintent)
         }
 
-        //===================================삭제 버튼===============================
+        //===================================음식점 삭제 버튼===============================
         binding.del.setOnClickListener {
                 val imageUrl = intent.getStringExtra("rmainimg").toString()
                 Log.d("joj", "삭제-> 이미지 경로")
@@ -497,6 +584,49 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
             val refreshIntent = Intent(this@ItemActivity, MainActivity::class.java)
             startActivity(refreshIntent)
             }
+        //===================================리뷰 수정 버튼===============================
+        binding.reviewmod.setOnClickListener {
+            reviewService = retrofit.create(ReviewService::class.java)
+
+            val call1: Call<Comment?>? = reviewService.getReviewOne(uid,rid.toString())
+            call1?.enqueue(object : Callback<Comment?> {
+                override fun onResponse(call1: Call<Comment?>, response: Response<Comment?>) {
+                    if (response.isSuccessful) {
+                        val revieOne = response.body()
+                        // foodInfo를 사용하여 필요한 작업 수행
+                        if (revieOne != null) {
+                            // 예시: 응답 데이터의 이름을 로그로 출력
+                            val reviewintnet = Intent(this@ItemActivity, ModReviewActivity::class.java)
+                            reviewintnet.putExtra("id",id)
+                            reviewintnet.putExtra("cmt",revieOne.cmt)
+                            reviewintnet.putExtra("cmtTime",revieOne.timestamp)
+                            reviewintnet.putExtra("reviewimg",revieOne?.reviewimg)
+                            reviewintnet.putExtra("nickname",revieOne.nickname)
+                            reviewintnet.putExtra("starpoint",revieOne.starpoint)
+                            reviewintnet.putExtra("uid",uid)
+                            reviewintnet.putExtra("rid",intent.getStringExtra("rid"))
+                            startActivity(reviewintnet)
+
+                        } else {
+                            Log.d("joj", "No data received")
+                        }
+                    } else {
+                        // 응답이 성공하지 않은 경우
+                        Log.d("joj", "Response not successful")
+                    }
+                }
+
+                override fun onFailure(call1: Call<Comment?>, t: Throwable) {
+                    // 호출 실패 시 처리합니다.
+                }
+            })
+
+
+
+        }
+
+
+
     }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (toggle.onOptionsItemSelected(item)) {
@@ -636,4 +766,35 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         })
     }
+    // 별점 이미지를 업데이트하는 메서드
+    private fun updateStarRatingImage(rstaravg: String?) {
+        val starpoint = rstaravg?.toDouble()
+        if (starpoint != null) {
+            // 별점 이미지 설정 작업
+            if (starpoint == 5.0) {
+                binding.starimg.setImageResource(R.drawable.five)
+            } else if (starpoint < 5 && starpoint >= 4.5) {
+                binding.starimg.setImageResource(R.drawable.four_half)
+            } else if (starpoint < 4.5 && starpoint >= 4) {
+                binding.starimg.setImageResource(R.drawable.four)
+            } else if (starpoint < 4 && starpoint >= 3.5) {
+                binding.starimg.setImageResource(R.drawable.three_half)
+            } else if (starpoint < 3.5 && starpoint >= 3) {
+                binding.starimg.setImageResource(R.drawable.three)
+            } else if (starpoint < 3 && starpoint >= 2.5) {
+                binding.starimg.setImageResource(R.drawable.two_half)
+            } else if (starpoint < 2.5 && starpoint >= 2) {
+                binding.starimg.setImageResource(R.drawable.two)
+            } else if (starpoint < 2 && starpoint >= 1.5) {
+                binding.starimg.setImageResource(R.drawable.one_half)
+            } else if (starpoint < 1.5 && starpoint >= 1) {
+                binding.starimg.setImageResource(R.drawable.one)
+            } else if (starpoint < 1 && starpoint >= 0.5) {
+                binding.starimg.setImageResource(R.drawable.half)
+            } else {
+                binding.starimg.setImageResource(R.drawable.zro)
+            }
+        }
+    }
+
 }
