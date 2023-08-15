@@ -14,6 +14,8 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -35,7 +37,9 @@ import com.example.frontend.dto.Comment
 import com.example.frontend.dto.CommentWithRating
 import com.example.frontend.dto.FoodInfo
 import com.example.frontend.main.MainActivity
+import com.example.frontend.member.DeleteActivity
 import com.example.frontend.member.LoginActivity
+import com.example.frontend.member.ModifyActivity
 import com.example.frontend.member.SignupActivity
 import com.example.frontend.recycler.MyAdapter2
 import com.example.frontend.recycler.ReviewMyAdapter2
@@ -87,12 +91,13 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
         setContentView(binding.root)
 
 
+
+
         binding.homeButton.setOnClickListener{
-            val intent = Intent(this, MainActivity::class.java)
+            val intent = Intent(this@ItemActivity, MainActivity::class.java)
             startActivity(intent)
         }
 
-        
         //============================user정보=========================
         // SharedPreferences 객체생성=================저장된 값을 가져오기 위해=====================================
         val sharedPreferences = getSharedPreferences("logged_user", Context.MODE_PRIVATE)
@@ -103,7 +108,162 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
         unickname = sharedPreferences.getString("unickname", null).toString()
         val uimg = sharedPreferences.getString("uimg", null)
         val role = sharedPreferences.getString("role", null)
-            
+
+
+        //====================토글 메뉴============================
+        setSupportActionBar(binding.toolbar)
+        toggle = ActionBarDrawerToggle(
+            this@ItemActivity,
+            binding.drawer,
+            R.string.drawer_opened,
+            R.string.drawer_closed
+        )
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        toggle.syncState()
+
+
+        binding.homeButton.setOnClickListener{
+            val intent = Intent(this@ItemActivity, MainActivity::class.java)
+            startActivity(intent)
+        }
+
+
+        binding.itemDrawerView.setNavigationItemSelectedListener {
+            if (it.itemId == R.id.joinmenu) {
+                val intent = Intent(this@ItemActivity, SignupActivity::class.java)
+                startActivity(intent)
+            } else if (it.itemId == R.id.addHome) {
+                val intent = Intent(this@ItemActivity, MainActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
+            else if (it.itemId == R.id.login) {
+                val intent = Intent(this@ItemActivity, LoginActivity::class.java)
+                startActivity(intent)
+            } else if (it.itemId == R.id.logout) {
+
+                //로그인할때 저장했던 객체 다시가져오기
+                var logged = sharedPreferences.edit()
+
+                //저장되어있는 값 null로 초기화
+                logged.putString("uid", null)
+                logged.putString("uemail", null)
+                logged.putString("upassword", null)
+                logged.putString("uname", null)
+                logged.putString("unickname", null)
+                logged.putString("uimg", null)
+                logged.putString("role", null)
+                // 변경 사항을 커밋하여 저장
+                logged.apply()
+
+                Toast.makeText(this@ItemActivity, "로그아웃 완료", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this@ItemActivity, MainActivity::class.java)
+                startActivity(intent)
+
+
+            } else if (it.itemId == R.id.modify) {
+                val intent = Intent(this@ItemActivity, ModifyActivity::class.java)
+                startActivity(intent)
+            } else if (it.itemId == R.id.delete) {
+                val intent = Intent(this@ItemActivity, DeleteActivity::class.java)
+                startActivity(intent)
+            } else if (it.itemId == R.id.addrestaurant) {
+                val intent = Intent(this@ItemActivity, AddRestaurantActivity::class.java)
+                startActivity(intent)
+            }
+            true
+        }
+
+
+        //쉐어드프리퍼런스의 값에따라 화면에 표시되도록하는 부분====================================================
+        // 네비게이션 헤더의 TextView 찾기
+        val headerView = binding.itemDrawerView.getHeaderView(0)
+
+        // 네비게이션 메뉴 아이템 찾기
+        val navigationMenu = binding.itemDrawerView.menu
+
+
+        //헤더 안에있는 뷰 접근부분
+        val userImageView = headerView.findViewById<ImageView>(R.id.userImageView)
+        val loggedUserNickname = headerView.findViewById<TextView>(R.id.loggedUserNickname)
+        val loggedUserEmail = headerView.findViewById<TextView>(R.id.loggedUserEmail)
+        val requestLogin = headerView.findViewById<TextView>(R.id.requestLogin)
+
+
+        if (uid != null && uemail != null && upassword != null && uname != null && unickname != null && uimg != null && role != null) {
+            val Role = role.toString()
+            requestLogin.visibility = View.GONE
+
+            //프로필 이미지 설정
+            if (uimg != null) {
+                // 이미지가 있는 경우 Glide 등을 사용하여 이미지를 설정
+                Glide.with(this@ItemActivity)
+                    .load(uimg)
+                    .into(userImageView)
+            } else {
+                // 이미지가 없는 경우 기본 이미지 또는 처리를 해줄 수 있음
+                userImageView.setImageResource(R.drawable.user_basic)
+            }
+
+
+            // 값을 TextView에 설정
+            loggedUserNickname.text = "$unickname 님 환영합니다!"
+            loggedUserEmail.text = "Email : $uemail"
+
+
+            //쉐어드 프리퍼런스에 값이 null이 아닌경우 = 로그인된 경우            에만 ?
+            //1. 회원가입, 로그인 버튼 안보이게
+            //2. 로그아웃 버튼 보이게
+
+            navigationMenu.findItem(R.id.joinmenu)?.isVisible = false
+            navigationMenu.findItem(R.id.login)?.isVisible = false
+            navigationMenu.findItem(R.id.logout)?.isVisible = true
+            navigationMenu.findItem(R.id.modify)?.isVisible = true
+            navigationMenu.findItem(R.id.delete)?.isVisible = true
+            navigationMenu.findItem(R.id.addrestaurant)?.isVisible = false
+
+            if(Role.equals("ADMIN")){
+                navigationMenu.findItem(R.id.addrestaurant)?.isVisible = true
+            }
+
+
+
+
+        } else {
+
+            userImageView.visibility = View.GONE
+            loggedUserNickname.visibility = View.GONE
+            loggedUserEmail.visibility = View.GONE
+
+
+
+
+            navigationMenu.findItem(R.id.joinmenu)?.isVisible = true
+            navigationMenu.findItem(R.id.login)?.isVisible = true
+            navigationMenu.findItem(R.id.logout)?.isVisible = false
+            navigationMenu.findItem(R.id.modify)?.isVisible = false
+            navigationMenu.findItem(R.id.delete)?.isVisible = false
+            navigationMenu.findItem(R.id.addrestaurant)?.isVisible = false
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         val Role = role.toString()
 
         binding.mod.isVisible = false
@@ -170,12 +330,12 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         toggle.syncState()
 
-        binding.mainDrawerView.setNavigationItemSelectedListener {
+        binding.itemDrawerView.setNavigationItemSelectedListener {
             if(it.itemId == R.id.joinmenu){
-                val intent = Intent(this, SignupActivity::class.java)
+                val intent = Intent(this@ItemActivity, SignupActivity::class.java)
                 startActivity(intent)
             }else if(it.itemId == R.id.login){
-                val intent = Intent(this, LoginActivity::class.java)
+                val intent = Intent(this@ItemActivity, LoginActivity::class.java)
                 startActivity(intent)
             }
             true
@@ -183,7 +343,7 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
         //====================토글 메뉴==========================
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
-        mapFragment.getMapAsync(this)
+        mapFragment.getMapAsync(this@ItemActivity)
         // 값을 받기 위해 Intent 가져오기
         val intent = intent
 
