@@ -87,6 +87,10 @@ class ItemActivity : AppCompatActivity(), OnMapReadyCallback {
         setContentView(binding.root)
 
 
+        binding.homeButton.setOnClickListener{
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+        }
 
         
         //============================user정보=========================

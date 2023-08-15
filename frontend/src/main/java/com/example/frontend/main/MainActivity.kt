@@ -90,6 +90,13 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         toggle.syncState()
 
+
+        binding.homeButton.setOnClickListener{
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+        }
+
+
         binding.mainDrawerView.setNavigationItemSelectedListener {
             if (it.itemId == R.id.joinmenu) {
                 val intent = Intent(this, SignupActivity::class.java)
@@ -119,9 +126,9 @@ class MainActivity : AppCompatActivity() {
                 logged.apply()
 
                 Toast.makeText(this, "로그아웃 완료", Toast.LENGTH_SHORT).show()
-                val intent = Intent(this, LoginActivity::class.java)
+                val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
-                finish()
+
 
             } else if (it.itemId == R.id.modify) {
                 val intent = Intent(this, ModifyActivity::class.java)
@@ -167,8 +174,8 @@ class MainActivity : AppCompatActivity() {
 
 
             // 값을 TextView에 설정
-            loggedUserNickname.text = "닉네임: $unickname"
-            loggedUserEmail.text = "이메일: $uemail"
+            loggedUserNickname.text = "$unickname 님 환영합니다!"
+            loggedUserEmail.text = "Email : $uemail"
 
 
             //쉐어드 프리퍼런스에 값이 null이 아닌경우 = 로그인된 경우            에만 ?

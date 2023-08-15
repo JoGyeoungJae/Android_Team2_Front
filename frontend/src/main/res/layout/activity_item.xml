@@ -19,7 +19,17 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?attr/colorPrimary"/>
+                android:background="?attr/colorPrimary">
+
+                <ImageButton
+                    android:id="@+id/home_button"
+                    android:layout_width="50dp"
+                    android:layout_height="45dp"
+                    android:src="@drawable/imagebutton"
+                    android:contentDescription="Button Description"
+                    />
+
+                </androidx.appcompat.widget.Toolbar>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -57,6 +67,8 @@
                             android:id="@+id/mod"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
+                            android:textColor="@color/setting2"
+                            android:textStyle="bold"
                             android:text="수정"
                             android:layout_gravity="center_horizontal|center_vertical"/>
 
@@ -64,6 +76,8 @@
                             android:id="@+id/del"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
+                            android:textColor="@color/setting2"
+                            android:textStyle="bold"
                             android:text="삭제" />
                 </LinearLayout>
                 <fragment
@@ -253,6 +267,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="10dp"
+                        android:textColor="@color/setting2"
+                        android:textStyle="bold"
                         android:text="리뷰 수정"/>
                 </LinearLayout>
                 <androidx.recyclerview.widget.RecyclerView
@@ -302,6 +318,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="사진등록"
+                android:textColor="@color/setting2"
+                android:textStyle="bold"
                 android:layout_gravity="center_vertical|center_horizontal"/>
 
             <RatingBar
@@ -336,6 +354,8 @@
                     android:layout_height="match_parent"
                     android:padding="8dp"
                     android:text="등록하기"
+                    android:textColor="@color/setting2"
+                    android:textStyle="bold"
                     android:gravity="center"
                     android:layout_gravity="center_horizontal"/>
             </LinearLayout>

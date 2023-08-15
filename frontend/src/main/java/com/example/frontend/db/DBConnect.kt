@@ -4,9 +4,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object DBConnect {
-    private const val BASE_URL = "http://10.100.103.71:8080/"
+//    private const val BASE_URL = "http://10.100.103.71:8080/"
 //    private const val BASE_URL = "http://10.100.103.15:8080/"
-//    private const val BASE_URL = "http://10.100.103.17:8080/"
+    private const val BASE_URL = "http://221.164.21.15:8080/"
     val retrofit: Retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)

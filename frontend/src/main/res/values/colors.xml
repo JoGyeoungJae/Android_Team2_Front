@@ -9,4 +9,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="blue">#0539BC</color>
 
+    <color name="setting">#FFDE3E</color>
+    <color name="setting2">#16307A</color>
+
 </resources>
