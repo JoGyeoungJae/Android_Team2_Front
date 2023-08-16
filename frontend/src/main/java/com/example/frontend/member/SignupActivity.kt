@@ -234,6 +234,7 @@ class SignupActivity : AppCompatActivity() {
                                                         Toast.makeText(this@SignupActivity,"회원가입 완료!", Toast.LENGTH_SHORT).show()
                                                         val intent = Intent(this@SignupActivity, MainActivity::class.java)
                                                         startActivity(intent)
+                                                        finish()
                                                     }
 
                                                 } else {
@@ -294,6 +295,7 @@ class SignupActivity : AppCompatActivity() {
                                                         Toast.makeText(this@SignupActivity,"회원가입 완료!", Toast.LENGTH_SHORT).show()
                                                         val intent = Intent(this@SignupActivity, MainActivity::class.java)
                                                         startActivity(intent)
+                                                        finish()
                                                     }
 
                                                 } else {
@@ -365,6 +367,7 @@ class SignupActivity : AppCompatActivity() {
                                                         Toast.makeText(this@SignupActivity,"회원가입 완료!", Toast.LENGTH_SHORT).show()
                                                         val intent = Intent(this@SignupActivity, MainActivity::class.java)
                                                         startActivity(intent)
+                                                        finish()
                                                     }
 
                                                 } else {

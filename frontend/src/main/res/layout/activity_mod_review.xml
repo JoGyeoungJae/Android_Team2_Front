@@ -82,12 +82,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
+            android:textColor="@color/setting2"
+            android:textStyle="bold"
             android:text="리뷰 수정"/>
         <Button
             android:id="@+id/reviewdel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
+            android:textColor="@color/setting2"
+            android:textStyle="bold"
             android:text="리뷰 삭제" />
     </LinearLayout>
     </androidx.drawerlayout.widget.DrawerLayout>

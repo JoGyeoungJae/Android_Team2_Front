@@ -290,6 +290,7 @@ class ModifyActivity : AppCompatActivity() {
                                         Toast.makeText(this@ModifyActivity,"수정 완료!", Toast.LENGTH_SHORT).show()
                                         val intent = Intent(this@ModifyActivity, MainActivity::class.java)
                                         startActivity(intent)
+                                        finish()
                                     }
 
                                 } else {
@@ -362,6 +363,7 @@ class ModifyActivity : AppCompatActivity() {
                                         Toast.makeText(this@ModifyActivity,"수정 완료!", Toast.LENGTH_SHORT).show()
                                         val intent = Intent(this@ModifyActivity, MainActivity::class.java)
                                         startActivity(intent)
+                                        finish()
                                     }
 
                                 } else {
@@ -424,6 +426,7 @@ class ModifyActivity : AppCompatActivity() {
                                         Toast.makeText(this@ModifyActivity,"수정 완료!", Toast.LENGTH_SHORT).show()
                                         val intent = Intent(this@ModifyActivity, MainActivity::class.java)
                                         startActivity(intent)
+                                        finish()
                                     }
 
                                 } else {

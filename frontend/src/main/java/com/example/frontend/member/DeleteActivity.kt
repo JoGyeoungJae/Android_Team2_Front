@@ -123,6 +123,7 @@ class DeleteActivity : AppCompatActivity() {
                         Toast.makeText(this@DeleteActivity,"회원탈퇴 완료", Toast.LENGTH_SHORT).show()
                         val intent = Intent(this@DeleteActivity, MainActivity::class.java)
                         startActivity(intent)
+                        finish()
                     }
 
                 } else {

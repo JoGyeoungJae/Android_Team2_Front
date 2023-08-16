@@ -39,6 +39,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="갤러리"
+            android:textStyle="bold"
+            android:textColor="@color/setting2"
             android:layout_gravity="center_vertical"
             android:layout_marginRight="20dp"
             />
@@ -47,6 +49,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="카메라"
+            android:textStyle="bold"
+            android:textColor="@color/setting2"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="20dp"
             />
@@ -56,32 +60,34 @@
         android:id="@+id/signupEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Email"/>
+        android:hint="이메일"/>
 
     <EditText
         android:id="@+id/signupPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Password"
+        android:hint="비밀번호"
         android:inputType="textPassword"/>
 
     <EditText
         android:id="@+id/signupName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Name"/>
+        android:hint="이름"/>
 
     <EditText
         android:id="@+id/signupNickname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Nickname"/>
+        android:hint="닉네임"/>
 
     <Button
         android:id="@+id/signupButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="회원가입"
+        android:textStyle="bold"
+        android:textColor="@color/setting2"
         android:onClick="signupButtonClicked"
         android:layout_gravity="center_horizontal"/>
 
