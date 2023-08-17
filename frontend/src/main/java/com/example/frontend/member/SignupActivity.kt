@@ -15,17 +15,18 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
-import androidx.core.graphics.drawable.toBitmap
 import com.example.frontend.R
 import com.example.frontend.service.ApiService
 import com.example.frontend.dto.User
 import com.example.frontend.databinding.ActivitySignupBinding
+import com.example.frontend.db.DBConnect
+import com.example.frontend.db.DBConnect2
+import com.example.frontend.dto.Check
 import com.example.frontend.main.MainActivity
-import com.google.firebase.FirebaseApp
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.StorageMetadata
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
+import com.google.gson.GsonBuilder
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -35,7 +36,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileInputStream
-import java.io.InputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -172,205 +172,447 @@ class SignupActivity : AppCompatActivity() {
         val upassword = binding.signupPassword.text.toString()
         val uname = binding.signupName.text.toString()
         val unickname = binding.signupNickname.text.toString()
+        val role = "USER"
 
         if (uemail.isEmpty() || upassword.isEmpty() || uname.isEmpty() || unickname.isEmpty()) {
             // 어떤 입력값이 비어있으면 토스트 메시지 표시
             Toast.makeText(this, "모든 값을 입력하세요.", Toast.LENGTH_SHORT).show()
         }else {
-            //모든 값이 입력되어 있다면 동작
 
-            //이미지 스토리지에 저장ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
-            //여기서 , 이미지 파일을 읽은 스트림 .inputStream . 스토리지 올리기.
-//        if (inputStream != null) {
-//            Log.d("lsy","inputstream 확인: "+ inputStream.toString())
-//            uploadInputStream(inputStream)
-//            inputStream.close()
-//        }
-            //2  . 뷰에 선택된 이미지의 파일의 스트림을 읽어서, 이 스트림을 스토리지에 올리기.
-            if (checkImg.equals("y")) {
-                val storageRef: StorageReference = storage.reference
-                val imgRef: StorageReference = storageRef.child("profile_images/$uemail.jpg")
-                val bitmap = getBitmapFromView(binding.userImageView)
-                val baos = ByteArrayOutputStream()
-                bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-                val data = baos.toByteArray()
 
-                var uploadTask = imgRef.putBytes(data)
-                uploadTask.addOnSuccessListener {_ ->
-                    Log.d("lsy", "이미지 업로드 성공")
-                    // 이미지 업로드 후 다운로드 URL 가져오기
-                    imgRef.downloadUrl.addOnSuccessListener { uri ->
-                        val downloadUrl = uri.toString()
-                        Log.d("lsy", "Download URL: $downloadUrl")
-                        val uimg = downloadUrl
 
-                        // TODO: 필요한 대로 downloadUrl을 사용합니다.
-                        //서버로 값 전송
-                        val retrofit = Retrofit.Builder()
-                            .baseUrl("http://10.100.103.14:8080/") // Spring Boot 서버의 URL로 변경
-                            .addConverterFactory(GsonConverterFactory.create())
-                            .build()
+            val retrofit = DBConnect2.retrofit
+            val checkk = Check(uemail)
+            val apiService = retrofit.create(ApiService::class.java)
+            val call = apiService.check(checkk)
+            call.enqueue(object : Callback<String> {
+                override fun onResponse(call: Call<String>, response: Response<String>) {
 
-                        val user = User(uemail, upassword, uname, unickname, uimg)
-                        val apiService = retrofit.create(ApiService::class.java)
+                    if (response.isSuccessful) {
 
-                        val call = apiService.signup(user)
-                        call.enqueue(object : Callback<User> {
-                            override fun onResponse(call: Call<User>, response: Response<User>) {
-                                if (response.isSuccessful) {
-                                    // 성공적으로 응답을 받았을 때의 처리
-                                    Log.d("lsy", "응답 왔어.")
+                        val check = response.body()
+                        if(check.equals("ok!")){
 
-                                } else {
-                                    // 서버로부터 에러 응답을 받았을 때의 처리
+                            if (checkImg.equals("y")) {
+                                val storageRef: StorageReference = storage.reference
+                                val imgRef: StorageReference = storageRef.child("profile_images/$uemail.jpg")
+                                val bitmap = getBitmapFromView(binding.userImageView)
+                                val baos = ByteArrayOutputStream()
+                                bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+                                val data = baos.toByteArray()
+
+                                var uploadTask = imgRef.putBytes(data)
+                                uploadTask.addOnSuccessListener {_ ->
+                                    Log.d("lys", "이미지 업로드 성공")
+                                    // 이미지 업로드 후 다운로드 URL 가져오기
+                                    imgRef.downloadUrl.addOnSuccessListener { uri ->
+                                        val downloadUrl = uri.toString()
+                                        Log.d("lys", "Download URL: $downloadUrl")
+                                        val uimg = downloadUrl
+
+                                        // TODO: 필요한 대로 downloadUrl을 사용합니다.
+                                        //서버로 값 전송
+
+                                        val retrofit = DBConnect2.retrofit
+
+                                        val user = User(uemail, upassword, uname, unickname, uimg, role)
+                                        val apiService = retrofit.create(ApiService::class.java)
+
+                                        val call = apiService.signup(user)
+                                        call.enqueue(object : Callback<String> {
+                                            override fun onResponse(call: Call<String>, response: Response<String>) {
+                                                if (response.isSuccessful) {
+                                                    // 성공적으로 응답을 받았을 때의 처리
+                                                    Log.d("lys", "갤러리부분")
+                                                    val check = response.body()
+                                                    // 성공적으로 응답을 받았을 때의 처리. 입력한 값을 db에 저장하고 나서 ok! 를 리턴함
+                                                    Log.d("lys", "응답 o, $check")
+
+                                                    //ok! 가 리턴되었다는건 정상적으로 저장이 되었다는 뜻이니까
+                                                    if(check.equals("ok!")){
+                                                        //정상적으로 동작하면 다른 화면으로 이동하게끔
+                                                        Toast.makeText(this@SignupActivity,"회원가입 완료!", Toast.LENGTH_SHORT).show()
+                                                        val intent = Intent(this@SignupActivity, MainActivity::class.java)
+                                                        startActivity(intent)
+                                                        finish()
+                                                    }
+
+                                                } else {
+                                                    // 서버로부터 에러 응답을 받았을 때 처리
+                                                    Log.d("lys", "갤러리응답x")
+                                                }
+                                            }
+
+                                            override fun onFailure(call: Call<String>, t: Throwable) {
+                                                Log.d("lys", "Error occurred: ${t.message}")
+                                                // 네트워크 오류 등의 실패 처리
+                                            }
+                                        })
+
+
+                                    }.addOnFailureListener { exception ->
+                                        Log.e("lys", "다운로드 URL 가져오기 실패: ${exception.message}")
+                                    }
+                                }.addOnFailureListener {
+                                    Log.e("lys", "이미지 업로드 실패: ${it.message}")
+                                    // TODO: 이미지 업로드 실패 시에 할 작업 추가
+                                }
+                            } else if (checkImg.equals("n")) {
+                                val storageRef: StorageReference = storage.reference
+                                val imgRef: StorageReference = storageRef.child("profile_images/$uemail.jpg")
+                                val stream = FileInputStream(File(filePath))
+                                val uploadTask = imgRef.putStream(stream)
+
+                                uploadTask.addOnSuccessListener {_ ->
+                                    Log.d("lys", "이미지 업로드 성공")
+                                    // 이미지 업로드 후 다운로드 URL 가져오기
+                                    imgRef.downloadUrl.addOnSuccessListener { uri ->
+                                        val downloadUrl = uri.toString()
+                                        Log.d("lys", "Download URL: $downloadUrl")
+                                        val uimg = downloadUrl
+
+                                        // TODO: 필요한 대로 downloadUrl을 사용합니다.
+                                        //서버로 값 전송
+
+                                        val retrofit = DBConnect2.retrofit
+
+                                        val user = User(uemail, upassword, uname, unickname, uimg, role)
+                                        val apiService = retrofit.create(ApiService::class.java)
+
+                                        val call = apiService.signup(user)
+                                        call.enqueue(object : Callback<String> {
+                                            override fun onResponse(call: Call<String>, response: Response<String>) {
+                                                if (response.isSuccessful) {
+                                                    // 성공적으로 응답을 받았을 때의 처리
+                                                    Log.d("lys", "카메라부분")
+                                                    val check = response.body()
+                                                    // 성공적으로 응답을 받았을 때의 처리. 입력한 값을 db에 저장하고 나서 ok! 를 리턴함
+                                                    Log.d("lys", "응답 o, $check")
+
+                                                    //ok! 가 리턴되었다는건 정상적으로 저장이 되었다는 뜻이니까
+                                                    if(check.equals("ok!")){
+                                                        //정상적으로 동작하면 다른 화면으로 이동하게끔
+                                                        Toast.makeText(this@SignupActivity,"회원가입 완료!", Toast.LENGTH_SHORT).show()
+                                                        val intent = Intent(this@SignupActivity, MainActivity::class.java)
+                                                        startActivity(intent)
+                                                        finish()
+                                                    }
+
+                                                } else {
+                                                    // 서버로부터 에러 응답을 받았을 때의 처리
+                                                    Log.d("lys", "카메라응답x")
+                                                }
+                                            }
+
+                                            override fun onFailure(call: Call<String>, t: Throwable) {
+                                                Log.d("lys", "Error occurred: ${t.message}")
+                                                // 네트워크 오류 등의 실패 처리
+                                            }
+                                        })
+
+
+                                    }.addOnFailureListener { exception ->
+                                        Log.e("lys", "다운로드 URL 가져오기 실패: ${exception.message}")
+                                    }
+                                }.addOnFailureListener {
+                                    Log.e("lys", "이미지 업로드 실패: ${it.message}")
+                                    // TODO: 이미지 업로드 실패 시에 할 작업 추가
+                                }
+                            } else if (checkImg.equals("none")) {
+
+                                val storageRef: StorageReference = storage.reference
+                                val imgRef: StorageReference = storageRef.child("profile_images/$uemail.jpg")
+
+                                val drawableId = R.drawable.user_basic // drawable 폴더에 있는 이미지의 리소스 ID
+                                val drawable = resources.getDrawable(drawableId, null)
+                                val bitmap = (drawable as BitmapDrawable).bitmap
+
+                                // 이미지를 스트림으로 변환
+                                val stream = ByteArrayOutputStream()
+                                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+                                val byteArray = stream.toByteArray()
+
+                                // 이미지 업로드
+                                val uploadTask = imgRef.putBytes(byteArray)
+                                uploadTask.addOnSuccessListener {_ ->
+                                    Log.d("lys", "이미지 업로드 성공")
+                                    // 이미지 업로드 후 다운로드 URL 가져오기
+                                    imgRef.downloadUrl.addOnSuccessListener { uri ->
+                                        val downloadUrl = uri.toString()
+                                        Log.d("lys", "Download URL: $downloadUrl")
+                                        val uimg = downloadUrl
+
+                                        // TODO: 필요한 대로 downloadUrl을 사용합니다.
+                                        //서버로 값 전송
+
+                                        val retrofit = DBConnect2.retrofit
+
+                                        val user = User(uemail, upassword, uname, unickname, uimg, role)
+                                        val apiService = retrofit.create(ApiService::class.java)
+
+                                        val call = apiService.signup(user)
+
+
+                                        call.enqueue(object : Callback<String> {
+                                            override fun onResponse(call: Call<String>, response: Response<String>) {
+                                                if (response.isSuccessful) {
+                                                    Log.d("lys", "기본이미지부분")
+                                                    val check = response.body()
+                                                    // 성공적으로 응답을 받았을 때의 처리. 입력한 값을 db에 저장하고 나서 ok! 를 리턴함
+                                                    Log.d("lys", "응답 o, $check")
+
+                                                    //ok! 가 리턴되었다는건 정상적으로 저장이 되었다는 뜻이니까
+                                                    if(check.equals("ok!")){
+                                                        //정상적으로 동작하면 다른 화면으로 이동하게끔
+                                                        Toast.makeText(this@SignupActivity,"회원가입 완료!", Toast.LENGTH_SHORT).show()
+                                                        val intent = Intent(this@SignupActivity, MainActivity::class.java)
+                                                        startActivity(intent)
+                                                        finish()
+                                                    }
+
+                                                } else {
+                                                    // 서버로부터 에러 응답을 받았을 때의 처리
+                                                    Log.d("lys", "기본이미지응답x")
+                                                }
+                                            }
+
+                                            override fun onFailure(call: Call<String>, t: Throwable) {
+                                                Log.d("lys", "응답 x Error occurred: ${t.message}")
+                                                // 네트워크 오류 등의 실패처리
+                                            }
+                                        })
+
+
+                                    }.addOnFailureListener { exception ->
+                                        Log.e("lys", "다운로드 URL 가져오기 실패: ${exception.message}")
+                                    }
+                                }.addOnFailureListener {
+                                    Log.e("lys", "이미지 업로드 실패: ${it.message}")
+                                    // TODO: 이미지 업로드 실패 시에 할 작업 추가
                                 }
                             }
 
-                            override fun onFailure(call: Call<User>, t: Throwable) {
-                                Log.e("NetworkError", "Error occurred: ${t.message}")
-                                // 네트워크 오류 등의 실패 처리
-                            }
-                        })
+
+                        }
+                        if(check.equals("no")){
+                            Toast.makeText(this@SignupActivity, "이미 등록된 이메일입니다.", Toast.LENGTH_SHORT).show()
+                        }
 
 
-                    }.addOnFailureListener { exception ->
-                        Log.e("lsy", "다운로드 URL 가져오기 실패: ${exception.message}")
+                    } else {
+                        Log.d("lys", "체크응답x")
                     }
-                }.addOnFailureListener {
-                    Log.e("lsy", "이미지 업로드 실패: ${it.message}")
-                    // TODO: 이미지 업로드 실패 시에 할 작업 추가
                 }
-            } else if (checkImg.equals("n")) {
-                val storageRef: StorageReference = storage.reference
-                val imgRef: StorageReference = storageRef.child("profile_images/$uemail.jpg")
 
-                val stream = FileInputStream(File(filePath))
-
-                Log.d("lsy", storageRef.toString())
-                Log.d("lsy", imgRef.toString())
-                Log.d("lsy", filePath)
-                Log.d("lsy", stream.toString())
-
-                val uploadTask = imgRef.putStream(stream)
-                uploadTask.addOnSuccessListener {_ ->
-                    Log.d("lsy", "이미지 업로드 성공")
-                    // 이미지 업로드 후 다운로드 URL 가져오기
-                    imgRef.downloadUrl.addOnSuccessListener { uri ->
-                        val downloadUrl = uri.toString()
-                        Log.d("lsy", "Download URL: $downloadUrl")
-                        val uimg = downloadUrl
-
-                        // TODO: 필요한 대로 downloadUrl을 사용합니다.
-                        //서버로 값 전송
-                        val retrofit = Retrofit.Builder()
-                            .baseUrl("http://10.100.103.14:8080/") // Spring Boot 서버의 URL로 변경
-                            .addConverterFactory(GsonConverterFactory.create())
-                            .build()
-
-                        val user = User(uemail, upassword, uname, unickname, uimg)
-                        val apiService = retrofit.create(ApiService::class.java)
-
-                        val call = apiService.signup(user)
-                        call.enqueue(object : Callback<User> {
-                            override fun onResponse(call: Call<User>, response: Response<User>) {
-                                if (response.isSuccessful) {
-                                    // 성공적으로 응답을 받았을 때의 처리
-                                    Log.d("lsy", "응답 왔어.")
-
-                                } else {
-                                    // 서버로부터 에러 응답을 받았을 때의 처리
-                                }
-                            }
-
-                            override fun onFailure(call: Call<User>, t: Throwable) {
-                                Log.e("NetworkError", "Error occurred: ${t.message}")
-                                // 네트워크 오류 등의 실패 처리
-                            }
-                        })
-
-
-                    }.addOnFailureListener { exception ->
-                        Log.e("lsy", "다운로드 URL 가져오기 실패: ${exception.message}")
-                    }
-                }.addOnFailureListener {
-                    Log.e("lsy", "이미지 업로드 실패: ${it.message}")
-                    // TODO: 이미지 업로드 실패 시에 할 작업 추가
+                override fun onFailure(call: Call<String>, t: Throwable) {
+                    Log.d("lys", "Error occurred: ${t.message}")
                 }
-            } else if (checkImg.equals("none")) {
-
-                val storageRef: StorageReference = storage.reference
-                val imgRef: StorageReference = storageRef.child("profile_images/$uemail.jpg")
-
-                val drawableId = R.drawable.user_basic // drawable 폴더에 있는 이미지의 리소스 ID
-                val drawable = resources.getDrawable(drawableId, null)
-                val bitmap = (drawable as BitmapDrawable).bitmap
-
-                // 이미지를 스트림으로 변환
-                val stream = ByteArrayOutputStream()
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-                val byteArray = stream.toByteArray()
-
-                // 이미지 업로드
-                val uploadTask = imgRef.putBytes(byteArray)
-                uploadTask.addOnSuccessListener {_ ->
-                    Log.d("lsy", "이미지 업로드 성공")
-                    // 이미지 업로드 후 다운로드 URL 가져오기
-                    imgRef.downloadUrl.addOnSuccessListener { uri ->
-                        val downloadUrl = uri.toString()
-                        Log.d("lsy", "Download URL: $downloadUrl")
-                        val uimg = downloadUrl
-
-                        // TODO: 필요한 대로 downloadUrl을 사용합니다.
-                        //서버로 값 전송
-                        val retrofit = Retrofit.Builder()
-                            .baseUrl("http://10.100.103.14:8080/") // Spring Boot 서버의 URL로 변경
-                            .addConverterFactory(GsonConverterFactory.create())
-                            .build()
-
-                        val user = User(uemail, upassword, uname, unickname, uimg)
-                        val apiService = retrofit.create(ApiService::class.java)
-
-                        val call = apiService.signup(user)
-                        call.enqueue(object : Callback<User> {
-                            override fun onResponse(call: Call<User>, response: Response<User>) {
-                                if (response.isSuccessful) {
-                                    // 성공적으로 응답을 받았을 때의 처리
-                                    Log.d("lsy", "응답 왔어.")
-
-                                } else {
-                                    // 서버로부터 에러 응답을 받았을 때의 처리
-                                }
-                            }
-
-                            override fun onFailure(call: Call<User>, t: Throwable) {
-                                Log.e("NetworkError", "Error occurred: ${t.message}")
-                                // 네트워크 오류 등의 실패처리
-                            }
-                        })
+            })
 
 
-                    }.addOnFailureListener { exception ->
-                        Log.e("lsy", "다운로드 URL 가져오기 실패: ${exception.message}")
-                    }
-                }.addOnFailureListener {
-                    Log.e("lsy", "이미지 업로드 실패: ${it.message}")
-                    // TODO: 이미지 업로드 실패 시에 할 작업 추가
-                }
-            }
+
+
+
+
+//            if (checkImg.equals("y")) {
+//                val storageRef: StorageReference = storage.reference
+//                val imgRef: StorageReference = storageRef.child("profile_images/$uemail.jpg")
+//                val bitmap = getBitmapFromView(binding.userImageView)
+//                val baos = ByteArrayOutputStream()
+//                bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+//                val data = baos.toByteArray()
+//
+//                var uploadTask = imgRef.putBytes(data)
+//                uploadTask.addOnSuccessListener {_ ->
+//                    Log.d("lys", "이미지 업로드 성공")
+//                    // 이미지 업로드 후 다운로드 URL 가져오기
+//                    imgRef.downloadUrl.addOnSuccessListener { uri ->
+//                        val downloadUrl = uri.toString()
+//                        Log.d("lys", "Download URL: $downloadUrl")
+//                        val uimg = downloadUrl
+//
+//                        // TODO: 필요한 대로 downloadUrl을 사용합니다.
+//                        //서버로 값 전송
+//
+//                        val retrofit = DBConnect2.retrofit
+//
+//                        val user = User(uemail, upassword, uname, unickname, uimg, role)
+//                        val apiService = retrofit.create(ApiService::class.java)
+//
+//                        val call = apiService.signup(user)
+//                        call.enqueue(object : Callback<String> {
+//                            override fun onResponse(call: Call<String>, response: Response<String>) {
+//                                if (response.isSuccessful) {
+//                                    // 성공적으로 응답을 받았을 때의 처리
+//                                    Log.d("lys", "갤러리부분")
+//                                    val check = response.body()
+//                                    // 성공적으로 응답을 받았을 때의 처리. 입력한 값을 db에 저장하고 나서 ok! 를 리턴함
+//                                    Log.d("lys", "응답 o, $check")
+//
+//                                    //ok! 가 리턴되었다는건 정상적으로 저장이 되었다는 뜻이니까
+//                                    if(check.equals("ok!")){
+//                                        //정상적으로 동작하면 다른 화면으로 이동하게끔
+//                                        Toast.makeText(this@SignupActivity,"회원가입 완료!", Toast.LENGTH_SHORT).show()
+//                                        val intent = Intent(this@SignupActivity, MainActivity::class.java)
+//                                        startActivity(intent)
+//                                    }
+//
+//                                } else {
+//                                    // 서버로부터 에러 응답을 받았을 때 처리
+//                                    Log.d("lys", "응답x")
+//                                }
+//                            }
+//
+//                            override fun onFailure(call: Call<String>, t: Throwable) {
+//                                Log.d("lys", "Error occurred: ${t.message}")
+//                                // 네트워크 오류 등의 실패 처리
+//                            }
+//                        })
+//
+//
+//                    }.addOnFailureListener { exception ->
+//                        Log.e("lys", "다운로드 URL 가져오기 실패: ${exception.message}")
+//                    }
+//                }.addOnFailureListener {
+//                    Log.e("lys", "이미지 업로드 실패: ${it.message}")
+//                    // TODO: 이미지 업로드 실패 시에 할 작업 추가
+//                }
+//            } else if (checkImg.equals("n")) {
+//                val storageRef: StorageReference = storage.reference
+//                val imgRef: StorageReference = storageRef.child("profile_images/$uemail.jpg")
+//                val stream = FileInputStream(File(filePath))
+//                val uploadTask = imgRef.putStream(stream)
+//
+//                uploadTask.addOnSuccessListener {_ ->
+//                    Log.d("lys", "이미지 업로드 성공")
+//                    // 이미지 업로드 후 다운로드 URL 가져오기
+//                    imgRef.downloadUrl.addOnSuccessListener { uri ->
+//                        val downloadUrl = uri.toString()
+//                        Log.d("lys", "Download URL: $downloadUrl")
+//                        val uimg = downloadUrl
+//
+//                        // TODO: 필요한 대로 downloadUrl을 사용합니다.
+//                        //서버로 값 전송
+//
+//                        val retrofit = DBConnect2.retrofit
+//
+//                        val user = User(uemail, upassword, uname, unickname, uimg, role)
+//                        val apiService = retrofit.create(ApiService::class.java)
+//
+//                        val call = apiService.signup(user)
+//                        call.enqueue(object : Callback<String> {
+//                            override fun onResponse(call: Call<String>, response: Response<String>) {
+//                                if (response.isSuccessful) {
+//                                    // 성공적으로 응답을 받았을 때의 처리
+//                                    Log.d("lys", "카메라부분")
+//                                    val check = response.body()
+//                                    // 성공적으로 응답을 받았을 때의 처리. 입력한 값을 db에 저장하고 나서 ok! 를 리턴함
+//                                    Log.d("lys", "응답 o, $check")
+//
+//                                    //ok! 가 리턴되었다는건 정상적으로 저장이 되었다는 뜻이니까
+//                                    if(check.equals("ok!")){
+//                                        //정상적으로 동작하면 다른 화면으로 이동하게끔
+//                                        Toast.makeText(this@SignupActivity,"회원가입 완료!", Toast.LENGTH_SHORT).show()
+//                                        val intent = Intent(this@SignupActivity, MainActivity::class.java)
+//                                        startActivity(intent)
+//                                    }
+//
+//                                } else {
+//                                    // 서버로부터 에러 응답을 받았을 때의 처리
+//                                    Log.d("lys", "응답x")
+//                                }
+//                            }
+//
+//                            override fun onFailure(call: Call<String>, t: Throwable) {
+//                                Log.d("lys", "Error occurred: ${t.message}")
+//                                // 네트워크 오류 등의 실패 처리
+//                            }
+//                        })
+//
+//
+//                    }.addOnFailureListener { exception ->
+//                        Log.e("lys", "다운로드 URL 가져오기 실패: ${exception.message}")
+//                    }
+//                }.addOnFailureListener {
+//                    Log.e("lys", "이미지 업로드 실패: ${it.message}")
+//                    // TODO: 이미지 업로드 실패 시에 할 작업 추가
+//                }
+//            } else if (checkImg.equals("none")) {
+//
+//                val storageRef: StorageReference = storage.reference
+//                val imgRef: StorageReference = storageRef.child("profile_images/$uemail.jpg")
+//
+//                val drawableId = R.drawable.user_basic // drawable 폴더에 있는 이미지의 리소스 ID
+//                val drawable = resources.getDrawable(drawableId, null)
+//                val bitmap = (drawable as BitmapDrawable).bitmap
+//
+//                // 이미지를 스트림으로 변환
+//                val stream = ByteArrayOutputStream()
+//                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+//                val byteArray = stream.toByteArray()
+//
+//                // 이미지 업로드
+//                val uploadTask = imgRef.putBytes(byteArray)
+//                uploadTask.addOnSuccessListener {_ ->
+//                    Log.d("lys", "이미지 업로드 성공")
+//                    // 이미지 업로드 후 다운로드 URL 가져오기
+//                    imgRef.downloadUrl.addOnSuccessListener { uri ->
+//                        val downloadUrl = uri.toString()
+//                        Log.d("lys", "Download URL: $downloadUrl")
+//                        val uimg = downloadUrl
+//
+//                        // TODO: 필요한 대로 downloadUrl을 사용합니다.
+//                        //서버로 값 전송
+//
+//                        val retrofit = DBConnect2.retrofit
+//
+//                        val user = User(uemail, upassword, uname, unickname, uimg, role)
+//                        val apiService = retrofit.create(ApiService::class.java)
+//
+//                        val call = apiService.signup(user)
+//
+//
+//                        call.enqueue(object : Callback<String> {
+//                            override fun onResponse(call: Call<String>, response: Response<String>) {
+//                                if (response.isSuccessful) {
+//                                    Log.d("lys", "기본이미지부분")
+//                                    val check = response.body()
+//                                    // 성공적으로 응답을 받았을 때의 처리. 입력한 값을 db에 저장하고 나서 ok! 를 리턴함
+//                                    Log.d("lys", "응답 o, $check")
+//
+//                                    //ok! 가 리턴되었다는건 정상적으로 저장이 되었다는 뜻이니까
+//                                    if(check.equals("ok!")){
+//                                        //정상적으로 동작하면 다른 화면으로 이동하게끔
+//                                        Toast.makeText(this@SignupActivity,"회원가입 완료!", Toast.LENGTH_SHORT).show()
+//                                        val intent = Intent(this@SignupActivity, MainActivity::class.java)
+//                                        startActivity(intent)
+//                                    }
+//
+//                                } else {
+//                                    // 서버로부터 에러 응답을 받았을 때의 처리
+//                                    Log.d("lys", "응답 x")
+//                                }
+//                            }
+//
+//                            override fun onFailure(call: Call<String>, t: Throwable) {
+//                                Log.d("lys", "응답 x Error occurred: ${t.message}")
+//                                // 네트워크 오류 등의 실패처리
+//                            }
+//                        })
+//
+//
+//                    }.addOnFailureListener { exception ->
+//                        Log.e("lys", "다운로드 URL 가져오기 실패: ${exception.message}")
+//                    }
+//                }.addOnFailureListener {
+//                    Log.e("lys", "이미지 업로드 실패: ${it.message}")
+//                    // TODO: 이미지 업로드 실패 시에 할 작업 추가
+//                }
+//            }
+
             //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 
 
-
-
-
-
-
-
-
-            //정상적으로 동작하면 다른 화면으로 이동하게끔
-            Toast.makeText(this, "회원가입 완료!", Toast.LENGTH_SHORT).show()
-            val intent = Intent(this@SignupActivity, MainActivity::class.java)
-            startActivity(intent)
 
         }
 
